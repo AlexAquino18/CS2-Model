@@ -45,39 +45,30 @@ class PrizePicksScraper:
             logger.error(f"Error fetching PrizePicks data: {e}")
             return []
     
-    def _discover_cs2_league_id(self) -> Optional[int]:
-        """Discover CS2 league ID by fetching leagues endpoint using HTTP/2"""
+    def _get_all_leagues(self) -> Dict[str, int]:
+        """Fetch all available leagues from PrizePicks - GitHub approach"""
         try:
-            leagues_url = "https://api.prizepicks.com/leagues"
+            url = f"{self.base_url}/leagues"
+            response = self.session.get(url, timeout=10)
             
-            # Use httpx with HTTP/2 support
-            with httpx.Client(http2=True, timeout=15) as client:
-                response = client.get(leagues_url, headers=self.headers)
+            if response.status_code == 200:
+                data = response.json()
+                leagues = {}
+                for league in data.get('data', []):
+                    name = league.get('attributes', {}).get('name', '').upper()
+                    league_id = league.get('id')
+                    if name and league_id:
+                        leagues[name] = int(league_id)
                 
-                if response.status_code == 200:
-                    data = response.json()
-                    logger.info(f"Successfully fetched leagues list")
-                    
-                    if 'data' in data:
-                        for league in data['data']:
-                            name = league.get('attributes', {}).get('name', '').lower()
-                            league_id = league.get('id')
-                            
-                            logger.debug(f"Found league: {name} (ID: {league_id})")
-                            
-                            # Look for CS2, CSGO, or Counter-Strike
-                            if any(term in name for term in ['cs2', 'cs:2', 'counter-strike 2', 'csgo', 'counter strike']):
-                                logger.info(f"Found CS2/CSGO league: {name} (ID: {league_id})")
-                                return int(league_id)
-                else:
-                    logger.warning(f"Leagues API returned status {response.status_code}")
-            
-            logger.info("CS2 league not found in leagues list")
-            return None
-            
+                logger.info(f"Successfully fetched {len(leagues)} leagues from PrizePicks")
+                return leagues
+            else:
+                logger.warning(f"Leagues API returned status {response.status_code}")
+                return {}
+                
         except Exception as e:
-            logger.error(f"Error discovering CS2 league ID: {e}")
-            return None
+            logger.error(f"Error fetching leagues: {e}")
+            return {}
     
     def _fetch_league_props(self, league_id: int) -> List[Dict]:
         """Fetch props for a specific league using correct API format with HTTP/2"""
