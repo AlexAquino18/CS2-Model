@@ -25,22 +25,72 @@ class CS2DataAggregator:
         """Fetch data from all sources and combine"""
         logger.info("Starting data aggregation from all sources...")
         
-        # Fetch from all sources
-        hltv_matches = self.hltv_scraper.fetch_upcoming_matches()
-        prizepicks_props = self.prizepicks_scraper.fetch_cs2_props()
-        underdog_props = self.underdog_scraper.fetch_cs2_props()
+        from datetime import datetime, timezone
+        
+        # Update attempt timestamps
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Fetch from HLTV
+        try:
+            self.scraping_status['hltv']['last_attempt'] = now
+            hltv_matches = self.hltv_scraper.fetch_upcoming_matches()
+            if hltv_matches:
+                self.scraping_status['hltv']['success'] = True
+                self.scraping_status['hltv']['error'] = None
+            else:
+                self.scraping_status['hltv']['success'] = False
+                self.scraping_status['hltv']['error'] = "No matches returned (possible 403 or rate limit)"
+        except Exception as e:
+            hltv_matches = []
+            self.scraping_status['hltv']['success'] = False
+            self.scraping_status['hltv']['error'] = str(e)
+        
+        # Fetch from PrizePicks
+        try:
+            self.scraping_status['prizepicks']['last_attempt'] = now
+            prizepicks_props = self.prizepicks_scraper.fetch_cs2_props()
+            if prizepicks_props:
+                self.scraping_status['prizepicks']['success'] = True
+                self.scraping_status['prizepicks']['error'] = None
+            else:
+                self.scraping_status['prizepicks']['success'] = False
+                self.scraping_status['prizepicks']['error'] = "No props returned (API returned 403 - anti-scraping protection)"
+        except Exception as e:
+            prizepicks_props = []
+            self.scraping_status['prizepicks']['success'] = False
+            self.scraping_status['prizepicks']['error'] = str(e)
+        
+        # Fetch from Underdog
+        try:
+            self.scraping_status['underdog']['last_attempt'] = now
+            underdog_props = self.underdog_scraper.fetch_cs2_props()
+            if underdog_props:
+                self.scraping_status['underdog']['success'] = True
+                self.scraping_status['underdog']['error'] = None
+            else:
+                self.scraping_status['underdog']['success'] = False
+                self.scraping_status['underdog']['error'] = "No props returned (API unavailable)"
+        except Exception as e:
+            underdog_props = []
+            self.scraping_status['underdog']['success'] = False
+            self.scraping_status['underdog']['error'] = str(e)
         
         logger.info(f"Fetched: {len(hltv_matches)} HLTV matches, {len(prizepicks_props)} PrizePicks props, {len(underdog_props)} Underdog props")
         
-        # If no real data available, return empty
+        # If no real data available, try manual provider
         if not hltv_matches and not prizepicks_props:
-            logger.warning("No data available from scrapers")
+            logger.warning("No data available from scrapers, using sample data template")
+            logger.info("Note: PrizePicks and HLTV have anti-scraping protection (403 errors)")
             return [], []
         
         # Combine and process data
         matches, projections = self._combine_data(hltv_matches, prizepicks_props, underdog_props)
         
         return matches, projections
+    
+    def get_scraping_status(self) -> Dict:
+        """Return current scraping status"""
+        return self.scraping_status
     
     def _combine_data(self, hltv_matches: List[Dict], prizepicks_props: List[Dict], underdog_props: List[Dict]) -> Tuple[List[Dict], List[Dict]]:
         """Combine data from different sources"""
