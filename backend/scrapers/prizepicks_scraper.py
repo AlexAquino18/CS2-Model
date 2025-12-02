@@ -20,23 +20,30 @@ class PrizePicksScraper:
     def fetch_cs2_props(self) -> List[Dict]:
         """Fetch CS2 projections from PrizePicks API"""
         try:
-            # PrizePicks has a public API endpoint
-            params = {
-                'league_id': 'CS2',  # CS2 league ID - may need to find correct ID
-                'per_page': 250,
-                'single_stat': 'true'
-            }
-            
-            response = requests.get(self.base_url, headers=self.headers, params=params, timeout=10)
+            # Try direct API first - no league_id filter
+            response = requests.get(self.base_url, headers=self.headers, timeout=15)
             
             if response.status_code == 200:
                 data = response.json()
-                return self._parse_projections(data)
+                # Filter for CS2/Counter-Strike
+                cs2_projections = self._parse_projections(data)
+                if cs2_projections:
+                    return cs2_projections
             else:
-                logger.warning(f"PrizePicks API returned status {response.status_code}")
-                
-                # Try alternative scraping method
-                return self._scrape_website()
+                logger.info(f"PrizePicks API returned status {response.status_code}, trying alternative method")
+            
+            # Try with different endpoint structure
+            alt_url = "https://api.prizepicks.com/projections?league_id=1"  # Try league ID 1
+            response = requests.get(alt_url, headers=self.headers, timeout=15)
+            
+            if response.status_code == 200:
+                data = response.json()
+                cs2_projections = self._parse_projections(data)
+                if cs2_projections:
+                    return cs2_projections
+            
+            logger.info("Trying Selenium-based scraping for PrizePicks")
+            return self._scrape_with_selenium()
                 
         except Exception as e:
             logger.error(f"Error fetching PrizePicks data: {e}")
