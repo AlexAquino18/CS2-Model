@@ -1,4 +1,5 @@
 import requests
+import httpx
 from bs4 import BeautifulSoup
 import logging
 import json
