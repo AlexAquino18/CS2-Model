@@ -327,6 +327,15 @@ async def get_stats():
         "last_refresh": data_cache.get("last_refresh").isoformat() if data_cache.get("last_refresh") else None
     }
 
+@api_router.get("/scraping-status")
+async def get_scraping_status():
+    """Get status of data scraping from various sources"""
+    return {
+        "status": aggregator.get_scraping_status(),
+        "data_mode": "mock" if not any(s['success'] for s in aggregator.get_scraping_status().values()) else "mixed",
+        "note": "PrizePicks and HLTV have anti-scraping protection. Real data requires API keys or manual input."
+    }
+
 # Include the router in the main app
 app.include_router(api_router)
 
