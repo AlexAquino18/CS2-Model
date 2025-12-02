@@ -14,6 +14,12 @@ class CS2DataAggregator:
         self.prizepicks_scraper = PrizePicksScraper()
         self.underdog_scraper = UnderdogScraper()
         self.hltv_scraper = HLTVScraper()
+        self.manual_provider = ManualDataProvider()
+        self.scraping_status = {
+            'hltv': {'success': False, 'error': None, 'last_attempt': None},
+            'prizepicks': {'success': False, 'error': None, 'last_attempt': None},
+            'underdog': {'success': False, 'error': None, 'last_attempt': None}
+        }
     
     async def fetch_all_data(self) -> Tuple[List[Dict], List[Dict]]:
         """Fetch data from all sources and combine"""
