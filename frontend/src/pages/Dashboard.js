@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import MatchStrip from "@/components/MatchStrip";
 import StatsPanel from "@/components/StatsPanel";
+import DataSourceBanner from "@/components/DataSourceBanner";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
