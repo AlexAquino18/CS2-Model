@@ -1,22 +1,20 @@
 import requests
-from bs4 import BeautifulSoup
 import logging
 from typing import List, Dict, Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import re
 
 logger = logging.getLogger(__name__)
 
 class HLTVScraper:
-    """Scraper for HLTV CS2 match data and player statistics"""
+    """Scraper for HLTV CS2 match data using hltv-api.vercel.app"""
     
     def __init__(self):
-        self.base_url = "https://www.hltv.org"
+        # Using the public HLTV API instead of scraping
+        self.api_base = "https://hltv-api.vercel.app/api"
         self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Referer': 'https://www.hltv.org/',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'application/json',
         }
     
     def fetch_upcoming_matches(self) -> List[Dict]:
