@@ -304,7 +304,7 @@ async def get_match_detail(match_id: str):
 async def refresh_data():
     """Manually trigger data refresh"""
     try:
-        matches, projections = await generate_mock_data()
+        matches, projections = await fetch_real_data()
         return {
             "status": "success",
             "matches_count": len(matches),
