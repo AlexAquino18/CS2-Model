@@ -1,40 +1,22 @@
 import requests
-import httpx
-from bs4 import BeautifulSoup
 import logging
 import json
 from typing import List, Dict, Optional
 import time
-import uuid
 
 logger = logging.getLogger(__name__)
 
 class PrizePicksScraper:
-    """Scraper for PrizePicks CS2 props"""
+    """Scraper for PrizePicks CS2 props - Using dannyphantomSS/prizepickAPI approach"""
     
     def __init__(self):
-        self.base_url = "https://api.prizepicks.com/projections"
-        # Headers from StackOverflow solution - critical for bypassing Cloudflare
-        self.headers = {
-            'sec-ch-ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
-            'sec-ch-ua-mobile': '?0',
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Referer': 'https://app.prizepicks.com/',
-            'X-Device-ID': str(uuid.uuid4()),  # Generate unique device ID
-            'sec-ch-ua-platform': '"macOS"'
-        }
-        
-        # League IDs - we'll try to find CS2
-        self.known_leagues = {
-            'NBA': 7,
-            'NFL': 1,
-            'CS2': None,  # Need to discover
-            'CSGO': None,
-            'LOL': None,
-            'Dota2': None
-        }
+        self.base_url = "https://api.prizepicks.com"
+        # Simpler headers that work (from GitHub repo)
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'application/json'
+        })
     
     def fetch_cs2_props(self) -> List[Dict]:
         """Fetch CS2 projections from PrizePicks API using StackOverflow solution"""
