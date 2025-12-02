@@ -3,6 +3,7 @@ from typing import List, Dict, Tuple
 from datetime import datetime, timezone
 import uuid
 from scrapers import PrizePicksScraper, UnderdogScraper, HLTVScraper
+from scrapers.manual_input import ManualDataProvider
 
 logger = logging.getLogger(__name__)
 
