@@ -36,36 +36,102 @@ class PrizePicksScraper:
         }
     
     def fetch_cs2_props(self) -> List[Dict]:
-        """Fetch CS2 projections from PrizePicks API"""
+        """Fetch CS2 projections from PrizePicks API using StackOverflow solution"""
         try:
-            # Try direct API first - no league_id filter
-            response = requests.get(self.base_url, headers=self.headers, timeout=15)
+            # First, discover available leagues
+            cs2_league_id = self._discover_cs2_league_id()
             
-            if response.status_code == 200:
-                data = response.json()
-                # Filter for CS2/Counter-Strike
-                cs2_projections = self._parse_projections(data)
-                if cs2_projections:
-                    return cs2_projections
-            else:
-                logger.info(f"PrizePicks API returned status {response.status_code}, trying alternative method")
+            if cs2_league_id:
+                logger.info(f"Found CS2 league ID: {cs2_league_id}")
+                return self._fetch_league_props(cs2_league_id)
             
-            # Try with different endpoint structure
-            alt_url = "https://api.prizepicks.com/projections?league_id=1"  # Try league ID 1
-            response = requests.get(alt_url, headers=self.headers, timeout=15)
+            # If no CS2 league found, try fetching all and filtering
+            logger.info("Attempting to fetch all leagues and filter for CS2")
+            all_props = self._fetch_all_props()
+            cs2_props = [p for p in all_props if self._is_cs2_prop(p)]
             
-            if response.status_code == 200:
-                data = response.json()
-                cs2_projections = self._parse_projections(data)
-                if cs2_projections:
-                    return cs2_projections
+            if cs2_props:
+                logger.info(f"Found {len(cs2_props)} CS2 props from all leagues")
+                return cs2_props
             
-            logger.info("Trying Selenium-based scraping for PrizePicks")
-            return self._scrape_with_selenium()
+            logger.warning("No CS2 props found in PrizePicks")
+            return []
                 
         except Exception as e:
             logger.error(f"Error fetching PrizePicks data: {e}")
             return []
+    
+    def _discover_cs2_league_id(self) -> Optional[int]:
+        """Discover CS2 league ID by fetching leagues endpoint"""
+        try:
+            leagues_url = "https://api.prizepicks.com/leagues"
+            response = requests.get(leagues_url, headers=self.headers, timeout=15)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if 'data' in data:
+                    for league in data['data']:
+                        name = league.get('attributes', {}).get('name', '').lower()
+                        league_id = league.get('id')
+                        
+                        # Look for CS2, CSGO, or Counter-Strike
+                        if any(term in name for term in ['cs2', 'cs:2', 'counter-strike 2', 'csgo', 'counter strike']):
+                            logger.info(f"Found CS2/CSGO league: {name} (ID: {league_id})")
+                            return int(league_id)
+            
+            logger.info("CS2 league not found in leagues list")
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error discovering CS2 league ID: {e}")
+            return None
+    
+    def _fetch_league_props(self, league_id: int) -> List[Dict]:
+        """Fetch props for a specific league using correct API format"""
+        try:
+            # Use the exact format from StackOverflow
+            url = f"{self.base_url}?league_id={league_id}&per_page=250&single_stat=true&game_mode=pickem"
+            
+            logger.info(f"Fetching props from: {url}")
+            response = requests.get(url, headers=self.headers, timeout=15)
+            
+            if response.status_code == 200:
+                data = response.json()
+                return self._parse_projections(data)
+            else:
+                logger.warning(f"PrizePicks API returned status {response.status_code} for league {league_id}")
+                return []
+                
+        except Exception as e:
+            logger.error(f"Error fetching league {league_id} props: {e}")
+            return []
+    
+    def _fetch_all_props(self) -> List[Dict]:
+        """Fetch all props without league filter"""
+        try:
+            url = f"{self.base_url}?per_page=250&single_stat=true&game_mode=pickem"
+            
+            response = requests.get(url, headers=self.headers, timeout=15)
+            
+            if response.status_code == 200:
+                data = response.json()
+                return self._parse_projections(data)
+            else:
+                logger.warning(f"PrizePicks API returned status {response.status_code}")
+                return []
+                
+        except Exception as e:
+            logger.error(f"Error fetching all props: {e}")
+            return []
+    
+    def _is_cs2_prop(self, prop: Dict) -> bool:
+        """Check if a prop is for CS2"""
+        game_info = prop.get('game_info', '').lower()
+        player_name = prop.get('player_name', '').lower()
+        
+        # Check for CS2/CSGO indicators
+        cs2_indicators = ['cs2', 'cs:2', 'counter-strike', 'csgo', 'mirage', 'dust2', 'inferno', 'nuke']
+        return any(indicator in game_info or indicator in player_name for indicator in cs2_indicators)
     
     def _parse_projections(self, data: Dict) -> List[Dict]:
         """Parse projections from API response"""
