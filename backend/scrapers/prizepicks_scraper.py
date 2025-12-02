@@ -63,22 +63,31 @@ class PrizePicksScraper:
             return []
     
     def _discover_cs2_league_id(self) -> Optional[int]:
-        """Discover CS2 league ID by fetching leagues endpoint"""
+        """Discover CS2 league ID by fetching leagues endpoint using HTTP/2"""
         try:
             leagues_url = "https://api.prizepicks.com/leagues"
-            response = requests.get(leagues_url, headers=self.headers, timeout=15)
             
-            if response.status_code == 200:
-                data = response.json()
-                if 'data' in data:
-                    for league in data['data']:
-                        name = league.get('attributes', {}).get('name', '').lower()
-                        league_id = league.get('id')
-                        
-                        # Look for CS2, CSGO, or Counter-Strike
-                        if any(term in name for term in ['cs2', 'cs:2', 'counter-strike 2', 'csgo', 'counter strike']):
-                            logger.info(f"Found CS2/CSGO league: {name} (ID: {league_id})")
-                            return int(league_id)
+            # Use httpx with HTTP/2 support
+            with httpx.Client(http2=True, timeout=15) as client:
+                response = client.get(leagues_url, headers=self.headers)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    logger.info(f"Successfully fetched leagues list")
+                    
+                    if 'data' in data:
+                        for league in data['data']:
+                            name = league.get('attributes', {}).get('name', '').lower()
+                            league_id = league.get('id')
+                            
+                            logger.debug(f"Found league: {name} (ID: {league_id})")
+                            
+                            # Look for CS2, CSGO, or Counter-Strike
+                            if any(term in name for term in ['cs2', 'cs:2', 'counter-strike 2', 'csgo', 'counter strike']):
+                                logger.info(f"Found CS2/CSGO league: {name} (ID: {league_id})")
+                                return int(league_id)
+                else:
+                    logger.warning(f"Leagues API returned status {response.status_code}")
             
             logger.info("CS2 league not found in leagues list")
             return None
