@@ -98,6 +98,88 @@ class CS2DataAggregator:
         """Return current scraping status"""
         return self.scraping_status
     
+    def _combine_data_with_mock_props(self, hltv_matches: List[Dict], prizepicks_props: List[Dict], underdog_props: List[Dict]) -> Tuple[List[Dict], List[Dict]]:
+        """Combine HLTV matches with mock props when PrizePicks is unavailable"""
+        from random import uniform
+        
+        matches = []
+        all_projections = []
+        
+        # Common player names for CS2 teams
+        player_pools = {
+            'default': ['player1', 'player2', 'player3', 'player4', 'player5']
+        }
+        
+        for hltv_match in hltv_matches[:10]:  # Limit to 10 matches
+            match_id = str(uuid.uuid4())
+            
+            # Create match object from HLTV data
+            match = {
+                'id': match_id,
+                'team1': hltv_match['team1'],
+                'team2': hltv_match['team2'],
+                'tournament': hltv_match['tournament'],
+                'start_time': hltv_match['start_time'].isoformat() if hasattr(hltv_match['start_time'], 'isoformat') else str(hltv_match['start_time']),
+                'map1': 'Mirage',  # Mock map data
+                'map2': 'Dust2',
+                'status': 'upcoming'
+            }
+            matches.append(match)
+            
+            # Generate mock projections for both teams
+            for team in [hltv_match['team1'], hltv_match['team2']]:
+                players = player_pools.get(team, player_pools['default'])
+                
+                for i in range(5):  # 5 players per team
+                    player_name = f"{team}_{i+1}" if team not in player_pools else players[i]
+                    
+                    # Kills projection
+                    base_kills = uniform(35, 50)
+                    kills_proj = {
+                        'match_id': match_id,
+                        'player_name': player_name,
+                        'team': team,
+                        'stat_type': 'kills',
+                        'projected_value': round(base_kills, 1),
+                        'confidence': round(uniform(70, 90), 1),
+                        'dfs_lines': [
+                            {
+                                'platform': 'prizepicks',
+                                'stat_type': 'kills',
+                                'line': round(base_kills + uniform(-2, 2), 1),
+                                'maps': 'Map1+Map2'
+                            }
+                        ],
+                        'value_opportunity': False,
+                        'difference': round(uniform(-2, 2), 1)
+                    }
+                    all_projections.append(kills_proj)
+                    
+                    # Headshots projection
+                    base_hs = uniform(15, 22)
+                    hs_proj = {
+                        'match_id': match_id,
+                        'player_name': player_name,
+                        'team': team,
+                        'stat_type': 'headshots',
+                        'projected_value': round(base_hs, 1),
+                        'confidence': round(uniform(70, 90), 1),
+                        'dfs_lines': [
+                            {
+                                'platform': 'prizepicks',
+                                'stat_type': 'headshots',
+                                'line': round(base_hs + uniform(-1, 1), 1),
+                                'maps': 'Map1+Map2'
+                            }
+                        ],
+                        'value_opportunity': False,
+                        'difference': round(uniform(-1, 1), 1)
+                    }
+                    all_projections.append(hs_proj)
+        
+        logger.info(f"Generated {len(matches)} matches and {len(all_projections)} mock projections from HLTV data")
+        return matches, all_projections
+    
     def _combine_data(self, hltv_matches: List[Dict], prizepicks_props: List[Dict], underdog_props: List[Dict]) -> Tuple[List[Dict], List[Dict]]:
         """Combine data from different sources"""
         matches = []
