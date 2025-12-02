@@ -37,74 +37,63 @@ class HLTVScraper:
             logger.error(f"Error fetching HLTV matches: {e}")
             return []
     
-    def _parse_matches(self, html: str) -> List[Dict]:
-        """Parse matches from HLTV HTML"""
+    def _parse_api_matches(self, matches_data: List[Dict]) -> List[Dict]:
+        """Parse matches from HLTV API response"""
         matches = []
         
         try:
-            soup = BeautifulSoup(html, 'html.parser')
-            
-            # Find upcoming match containers
-            match_containers = soup.find_all('div', class_='upcomingMatch')
-            
-            for container in match_containers[:10]:  # Limit to first 10 matches
+            # Filter for upcoming matches only (matches without results)
+            for match_data in matches_data[:15]:  # Limit to first 15 matches
                 try:
-                    match_data = self._extract_match_data(container)
-                    if match_data:
-                        matches.append(match_data)
+                    # Check if match has teams data
+                    if not match_data.get('teams') or len(match_data['teams']) < 2:
+                        continue
+                    
+                    team1 = match_data['teams'][0]['name']
+                    team2 = match_data['teams'][1]['name']
+                    
+                    # Parse time
+                    time_str = match_data.get('time', '')
+                    try:
+                        match_time = datetime.fromisoformat(time_str.replace('Z', '+00:00'))
+                    except:
+                        # If time parsing fails, use a future time
+                        match_time = datetime.now(timezone.utc) + timedelta(hours=2)
+                    
+                    # Only include future matches
+                    if match_time < datetime.now(timezone.utc):
+                        continue
+                    
+                    # Extract event info
+                    event = match_data.get('event', {})
+                    tournament = event.get('name', 'Unknown Tournament')
+                    
+                    # Extract format (bo1, bo3, bo5)
+                    match_format = match_data.get('maps', 'bo3').upper()
+                    
+                    match = {
+                        'id': match_data.get('id'),
+                        'team1': team1,
+                        'team2': team2,
+                        'start_time': match_time,
+                        'tournament': tournament,
+                        'format': match_format,
+                        'stars': match_data.get('stars', 0),
+                        'status': 'upcoming'
+                    }
+                    
+                    matches.append(match)
+                    
                 except Exception as e:
                     logger.debug(f"Error parsing individual match: {e}")
                     continue
             
-            logger.info(f"Parsed {len(matches)} HLTV matches")
+            logger.info(f"Parsed {len(matches)} upcoming HLTV matches")
             return matches
             
         except Exception as e:
-            logger.error(f"Error parsing HLTV HTML: {e}")
+            logger.error(f"Error parsing HLTV API matches: {e}")
             return []
-    
-    def _extract_match_data(self, container) -> Optional[Dict]:
-        """Extract match data from a match container"""
-        try:
-            # Extract team names
-            teams = container.find_all('div', class_='teamName')
-            if len(teams) < 2:
-                return None
-            
-            team1 = teams[0].text.strip()
-            team2 = teams[1].text.strip()
-            
-            # Extract match time
-            time_elem = container.find('div', class_='matchTime')
-            match_time = self._parse_match_time(time_elem.text if time_elem else '')
-            
-            # Extract event name
-            event_elem = container.find('div', class_='matchEvent')
-            tournament = event_elem.text.strip() if event_elem else 'Unknown Tournament'
-            
-            # Extract match format (BO1, BO3, etc.)
-            format_elem = container.find('div', class_='bestOf')
-            match_format = format_elem.text.strip() if format_elem else 'BO3'
-            
-            return {
-                'team1': team1,
-                'team2': team2,
-                'start_time': match_time,
-                'tournament': tournament,
-                'format': match_format,
-                'status': 'upcoming'
-            }
-            
-        except Exception as e:
-            logger.debug(f"Error extracting match data: {e}")
-            return None
-    
-    def _parse_match_time(self, time_str: str) -> datetime:
-        """Parse match time string to datetime"""
-        # This is simplified - HLTV times can be complex
-        # For now, return a future time
-        from datetime import timedelta
-        return datetime.now(timezone.utc) + timedelta(hours=2)
     
     def fetch_player_stats(self, player_name: str) -> Optional[Dict]:
         """Fetch player statistics from HLTV"""
