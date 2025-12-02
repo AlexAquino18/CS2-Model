@@ -78,6 +78,9 @@ data_cache = {
     "last_refresh": None
 }
 
+# Data aggregator for fetching real data
+aggregator = CS2DataAggregator()
+
 # Mock data generator
 async def generate_mock_data():
     """Generate realistic mock data for CS2 matches and projections"""
