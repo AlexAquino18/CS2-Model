@@ -134,32 +134,83 @@ class PrizePicksScraper:
         return any(indicator in game_info or indicator in player_name for indicator in cs2_indicators)
     
     def _parse_projections(self, data: Dict) -> List[Dict]:
-        """Parse projections from API response"""
+        """Parse projections from API response - improved parsing"""
         projections = []
         
         try:
-            if 'data' in data:
-                for item in data['data']:
-                    if item.get('type') == 'projection':
-                        attrs = item.get('attributes', {})
-                        
-                        # Extract player and stat info
-                        projection = {
-                            'player_name': attrs.get('description', '').split(' - ')[0].strip(),
-                            'stat_type': self._normalize_stat_type(attrs.get('stat_type', '')),
-                            'line': float(attrs.get('line_score', 0)),
-                            'game_info': attrs.get('description', ''),
-                            'start_time': attrs.get('start_time', ''),
-                        }
-                        
-                        if projection['player_name'] and projection['line'] > 0:
-                            projections.append(projection)
+            if 'data' not in data:
+                logger.warning("No 'data' field in API response")
+                return []
+            
+            # Also parse included data for additional context
+            included_data = {}
+            if 'included' in data:
+                for item in data['included']:
+                    item_type = item.get('type')
+                    item_id = item.get('id')
+                    if item_type and item_id:
+                        if item_type not in included_data:
+                            included_data[item_type] = {}
+                        included_data[item_type][item_id] = item.get('attributes', {})
+            
+            for item in data['data']:
+                if item.get('type') == 'projection':
+                    attrs = item.get('attributes', {})
+                    relationships = item.get('relationships', {})
+                    
+                    # Extract player name - try multiple fields
+                    player_name = attrs.get('name', '')
+                    if not player_name:
+                        # Try to get from description
+                        desc = attrs.get('description', '')
+                        if desc:
+                            # Usually format is "Player Name - Stat Type"
+                            parts = desc.split(' - ')
+                            if len(parts) > 0:
+                                player_name = parts[0].strip()
+                    
+                    # Get stat type
+                    stat_type = attrs.get('stat_type', '')
+                    
+                    # Get line score
+                    line_score = attrs.get('line_score')
+                    if line_score:
+                        try:
+                            line = float(line_score)
+                        except (ValueError, TypeError):
+                            continue
+                    else:
+                        continue
+                    
+                    # Get additional context
+                    game_info = attrs.get('description', '')
+                    start_time = attrs.get('start_time', '')
+                    
+                    # Try to get league/game info from relationships
+                    league_id = relationships.get('league', {}).get('data', {}).get('id')
+                    new_player_id = relationships.get('new_player', {}).get('data', {}).get('id')
+                    
+                    # Build projection object
+                    projection = {
+                        'player_name': player_name,
+                        'stat_type': self._normalize_stat_type(stat_type),
+                        'line': line,
+                        'game_info': game_info,
+                        'start_time': start_time,
+                        'league_id': league_id,
+                        'player_id': new_player_id
+                    }
+                    
+                    if player_name and line > 0:
+                        projections.append(projection)
             
             logger.info(f"Parsed {len(projections)} PrizePicks projections")
             return projections
             
         except Exception as e:
             logger.error(f"Error parsing projections: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             return []
     
     def _normalize_stat_type(self, stat_type: str) -> str:
