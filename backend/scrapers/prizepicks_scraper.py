@@ -89,15 +89,51 @@ class PrizePicksScraper:
         else:
             return stat_type_lower
     
-    def _scrape_website(self) -> List[Dict]:
-        """Fallback: Scrape PrizePicks website directly"""
+    def _scrape_with_selenium(self) -> List[Dict]:
+        """Selenium-based scraping for PrizePicks"""
         try:
-            # This would require more complex scraping with Selenium
-            # For now, return empty list
-            logger.info("Website scraping not implemented yet")
+            from selenium import webdriver
+            from selenium.webdriver.chrome.options import Options
+            from selenium.webdriver.common.by import By
+            from selenium.webdriver.support.ui import WebDriverWait
+            from selenium.webdriver.support import expected_conditions as EC
+            
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+            
+            driver = webdriver.Chrome(options=chrome_options)
+            
+            try:
+                driver.get("https://app.prizepicks.com/")
+                
+                # Wait for page to load and look for CS2/Counter-Strike content
+                wait = WebDriverWait(driver, 10)
+                
+                # Look for CS2 or Counter-Strike elements
+                # This is a basic implementation - would need to be refined based on actual site structure
+                projections = []
+                
+                # Try to find CS2 related content
+                cs2_elements = driver.find_elements(By.XPATH, "//*[contains(text(), 'CS2') or contains(text(), 'Counter-Strike')]")
+                
+                if cs2_elements:
+                    logger.info(f"Found {len(cs2_elements)} CS2-related elements")
+                    # Parse the elements to extract projection data
+                    # This would need more specific implementation based on site structure
+                
+                return projections
+                
+            finally:
+                driver.quit()
+                
+        except ImportError:
+            logger.error("Selenium not available for web scraping")
             return []
         except Exception as e:
-            logger.error(f"Error scraping website: {e}")
+            logger.error(f"Error with Selenium scraping: {e}")
             return []
 
 
