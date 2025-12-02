@@ -116,6 +116,9 @@ const Dashboard = () => {
         </div>
       </header>
 
+      {/* Data Source Banner */}
+      <DataSourceBanner />
+
       {/* Stats Bar */}
       {stats && (
         <div className="border-b border-border bg-card/30">
