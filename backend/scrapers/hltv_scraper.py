@@ -18,15 +18,19 @@ class HLTVScraper:
         }
     
     def fetch_upcoming_matches(self) -> List[Dict]:
-        """Fetch upcoming CS2 matches from HLTV"""
+        """Fetch upcoming CS2 matches from HLTV API"""
         try:
-            url = f"{self.base_url}/matches"
+            url = f"{self.api_base}/matches.json"
+            logger.info(f"Fetching matches from HLTV API: {url}")
+            
             response = requests.get(url, headers=self.headers, timeout=15)
             
             if response.status_code == 200:
-                return self._parse_matches(response.text)
+                data = response.json()
+                logger.info(f"Successfully fetched {len(data)} matches from HLTV API")
+                return self._parse_api_matches(data)
             else:
-                logger.warning(f"HLTV returned status {response.status_code}")
+                logger.warning(f"HLTV API returned status {response.status_code}")
                 return []
                 
         except Exception as e:
