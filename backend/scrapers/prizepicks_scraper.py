@@ -110,7 +110,7 @@ class PrizePicksScraper:
                 driver.get("https://app.prizepicks.com/")
                 
                 # Wait for page to load and look for CS2/Counter-Strike content
-                wait = WebDriverWait(driver, 10)
+                WebDriverWait(driver, 10)
                 
                 # Look for CS2 or Counter-Strike elements
                 # This is a basic implementation - would need to be refined based on actual site structure
