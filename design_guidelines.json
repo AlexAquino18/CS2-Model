@@ -1,0 +1,169 @@
+{
+  "design_system": {
+    "identity": {
+      "name": "E1_CS2_PRO_TERMINAL",
+      "tone": "Aggressive, Precision, Tactical, High-Tech",
+      "archetype": "Electric & Neon + Swiss High-Contrast",
+      "core_philosophy": "The Operator's Terminal. No fluff, just edge."
+    },
+    "typography": {
+      "font_family": {
+        "headings": "Unbounded, sans-serif",
+        "body": "Inter, sans-serif",
+        "mono": "JetBrains Mono, monospace"
+      },
+      "scale": {
+        "h1": "text-5xl md:text-7xl font-black tracking-tighter uppercase",
+        "h2": "text-3xl md:text-5xl font-bold tracking-tight",
+        "h3": "text-xl md:text-2xl font-bold tracking-tight",
+        "body": "text-base leading-relaxed text-gray-400",
+        "caption": "text-xs font-mono tracking-widest uppercase text-gray-500",
+        "data": "font-mono font-medium tracking-tight"
+      },
+      "imports": [
+        "https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap"
+      ]
+    },
+    "colors": {
+      "palette": {
+        "background": "#050505",
+        "foreground": "#EDEDED",
+        "card": "#0A0A0A",
+        "card_foreground": "#FFFFFF",
+        "primary": "#DE9B35",
+        "primary_foreground": "#000000",
+        "secondary": "#5D79AE",
+        "secondary_foreground": "#FFFFFF",
+        "accent": "#CCFF00",
+        "accent_foreground": "#000000",
+        "destructive": "#FF4444",
+        "border": "#1F1F1F",
+        "input": "#121212",
+        "ring": "#DE9B35"
+      },
+      "semantic": {
+        "t_side": "#DE9B35",
+        "ct_side": "#5D79AE",
+        "win": "#CCFF00",
+        "loss": "#FF4444",
+        "value_opportunity": "#CCFF00",
+        "neutral_grid": "#1A1A1A"
+      },
+      "gradients": {
+        "hero_glow": "radial-gradient(circle at center, rgba(222, 155, 53, 0.15) 0%, rgba(5, 5, 5, 0) 70%)",
+        "glass_surface": "linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)"
+      }
+    },
+    "layout": {
+      "grid_system": "The Control Room Grid",
+      "spacing": {
+        "container_padding": "p-6 md:p-12",
+        "section_gap": "gap-8",
+        "component_gap": "gap-4"
+      },
+      "border_radius": {
+        "default": "rounded-none",
+        "card": "rounded-sm",
+        "button": "rounded-sm"
+      },
+      "containers": {
+        "dashboard_main": "grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 min-h-screen bg-[#050505] text-white font-sans selection:bg-[#DE9B35] selection:text-black",
+        "match_strip": "col-span-full grid grid-cols-12 gap-4 items-center bg-[#0A0A0A] border border-[#1F1F1F] p-4 hover:border-[#DE9B35]/50 transition-colors group relative overflow-hidden"
+      }
+    },
+    "visual_enhancers": {
+      "effects": [
+        {
+          "name": "Scanlines",
+          "css": "background: repeating-linear-gradient(0deg, transparent, transparent 2px, #000000 3px); opacity: 0.1; pointer-events: none;"
+        },
+        {
+          "name": "Glow Borders",
+          "css": "box-shadow: 0 0 20px -5px rgba(222, 155, 53, 0.3);"
+        }
+      ],
+      "textures": "Noise overlay at 3% opacity on all card backgrounds to prevent banding."
+    },
+    "motion": {
+      "library": "framer-motion",
+      "defaults": {
+        "duration": 0.3,
+        "ease": "circOut"
+      },
+      "animations": {
+        "hover_lift": {
+          "y": -2,
+          "transition": { "duration": 0.2 }
+        },
+        "glitch_entrance": {
+          "initial": { "opacity": 0, "x": -10 },
+          "animate": { "opacity": 1, "x": 0 },
+          "transition": { "type": "spring", "stiffness": 300, "damping": 20 }
+        }
+      }
+    },
+    "components": {
+      "buttons": {
+        "primary": "bg-[#DE9B35] text-black font-black uppercase tracking-wider hover:bg-[#F0A845] active:scale-95 transition-all rounded-sm px-6 py-3 text-sm",
+        "secondary": "bg-transparent border border-[#333] text-gray-300 hover:border-white hover:text-white transition-all rounded-sm px-6 py-3 text-sm uppercase tracking-wider",
+        "ghost": "text-gray-500 hover:text-[#DE9B35] transition-colors uppercase text-xs tracking-widest"
+      },
+      "cards": {
+        "match_card": "bg-[#0A0A0A] border border-[#1F1F1F] hover:border-[#333] transition-colors relative overflow-hidden group",
+        "stat_panel": "bg-[#080808] border border-[#1A1A1A] p-4 flex flex-col gap-2"
+      },
+      "inputs": {
+        "search": "bg-[#0A0A0A] border border-[#1F1F1F] text-white placeholder:text-gray-700 focus:border-[#DE9B35] focus:ring-1 focus:ring-[#DE9B35] rounded-sm h-12 px-4 font-mono text-sm transition-all"
+      },
+      "data_display": {
+        "value_highlight": "text-[#CCFF00] font-mono font-bold",
+        "loss_highlight": "text-[#FF4444] font-mono font-bold",
+        "neutral_text": "text-gray-400 font-mono"
+      }
+    },
+    "assets": {
+      "images": {
+        "hero_bg": {
+          "url": "https://images.unsplash.com/photo-1732112548595-c2a8fdff796b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwzfHxDUzIlMjBtYXAlMjBtaXJhZ2UlMjBkYXJrJTIwbW9vZHl8ZW58MHx8fHwxNzY0NzE3MzUwfDA&ixlib=rb-4.1.0&q=85",
+          "alt": "Aerial night view representing tactical map overview",
+          "usage": "Hero section background with heavy dark overlay (opacity 90%)"
+        },
+        "operator_silhouette": {
+          "url": "https://images.unsplash.com/photo-1514124838563-9243ab7791a6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwxfHxDUzIlMjBjb3VudGVyJTIwdGVycm9yaXN0JTIwYWdlbnQlMjBzaWxob3VldHRlfGVufDB8fHx8MTc2NDcxNzM1MXww&ixlib=rb-4.1.0&q=85",
+          "alt": "Tactical operator silhouette",
+          "usage": "Login screen or empty state placeholder"
+        },
+        "tech_texture": {
+          "url": "https://images.pexels.com/photos/8721325/pexels-photo-8721325.jpeg",
+          "alt": "Abstract cyberpunk HUD texture",
+          "usage": "Subtle background for data visualization panels"
+        }
+      },
+      "icons": {
+        "library": "lucide-react",
+        "style": "Stroke width 1.5px, sharp edges where possible"
+      }
+    },
+    "accessibility": {
+      "contrast_check": "Ensure all text on #050505 background is at least #888888 or lighter.",
+      "focus_states": "Visible outline: 2px solid #DE9B35 offset 2px",
+      "reduced_motion": "Disable framer-motion animations if prefers-reduced-motion is true"
+    },
+    "instructions_to_main_agent": [
+      "1. INSTALL FONTS: Add the Google Fonts import to index.css immediately.",
+      "2. SETUP TAILWIND: Update tailwind.config.js with the specific colors defined in this JSON. Do not rely on default slate/gray scales.",
+      "3. COMPONENT OVERRIDES: When using Shadcn components, strip the 'rounded-md' classes and replace with 'rounded-sm' or 'rounded-none' to match the brutalist/terminal aesthetic.",
+      "4. DATA DENSITY: Do not use comfortable spacing for data tables. Use 'compact' density. This is a pro tool, not a marketing page.",
+      "5. VALUE HIGHLIGHTING: Automatically calculate the difference between 'Projection' and 'DFS Line'. If the difference is > 5%, highlight the row with the 'accent' color (#CCFF00).",
+      "6. NO LIGHT MODE: Force dark mode class on the html/body tag. Do not build a light mode toggle.",
+      "7. USE SONNER: For all notifications (e.g., 'Data Refreshed'), use the Sonner toast library with a dark theme."
+    ],
+    "universal_guidelines": [
+      "Do not use gradients for text.",
+      "Do not center align main dashboard content.",
+      "Use 'data-testid' for all interactive elements.",
+      "Never use generic AI emojis.",
+      "Always use 'lucide-react' for icons."
+    ]
+  }
+}
