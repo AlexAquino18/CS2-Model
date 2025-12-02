@@ -81,9 +81,59 @@ data_cache = {
 # Data aggregator for fetching real data
 aggregator = CS2DataAggregator()
 
-# Mock data generator
+# Data fetching function
+async def fetch_real_data():
+    """Fetch real CS2 data from scrapers"""
+    try:
+        logger.info("Fetching real data from scrapers...")
+        matches_data, projections_data = await aggregator.fetch_all_data()
+        
+        if matches_data and projections_data:
+            # Convert to proper model format
+            from pydantic import ValidationError
+            
+            matches = []
+            for m in matches_data:
+                try:
+                    matches.append(Match(**m))
+                except ValidationError as e:
+                    logger.error(f"Validation error for match: {e}")
+            
+            projections = []
+            for p in projections_data:
+                try:
+                    projections.append(Projection(**p))
+                except ValidationError as e:
+                    logger.error(f"Validation error for projection: {e}")
+            
+            # Store in cache and database
+            data_cache["matches"] = matches
+            data_cache["projections"] = projections
+            data_cache["last_refresh"] = datetime.now(timezone.utc)
+            
+            # Store in MongoDB
+            if matches:
+                await db.matches.delete_many({})
+                await db.matches.insert_many([m.model_dump() for m in matches])
+            
+            if projections:
+                await db.projections.delete_many({})
+                await db.projections.insert_many([p.model_dump() for p in projections])
+            
+            logger.info(f"Fetched {len(matches)} matches and {len(projections)} projections")
+            return matches, projections
+        else:
+            logger.warning("No real data available, falling back to mock data")
+            return await generate_mock_data()
+            
+    except Exception as e:
+        logger.error(f"Error fetching real data: {e}")
+        logger.info("Falling back to mock data")
+        return await generate_mock_data()
+
+# Mock data generator (fallback)
 async def generate_mock_data():
-    """Generate realistic mock data for CS2 matches and projections"""
+    """Generate realistic mock data for CS2 matches and projections (fallback)"""
     from random import uniform, choice, randint
     
     teams = ["Navi", "FaZe Clan", "G2 Esports", "Vitality", "Liquid", "MOUZ", "Heroic", "Astralis"]
