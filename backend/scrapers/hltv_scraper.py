@@ -95,25 +95,53 @@ class HLTVScraper:
             logger.error(f"Error parsing HLTV API matches: {e}")
             return []
     
-    def fetch_player_stats(self, player_name: str) -> Optional[Dict]:
-        """Fetch player statistics from HLTV"""
+    def fetch_player_stats(self, player_id: int) -> Optional[Dict]:
+        """Fetch player statistics from HLTV API"""
         try:
-            # Search for player
-            search_url = f"{self.base_url}/search?term={player_name}"
-            response = requests.get(search_url, headers=self.headers, timeout=10)
+            url = f"{self.api_base}/player.json?id={player_id}"
+            response = requests.get(url, headers=self.headers, timeout=10)
             
             if response.status_code == 200:
-                # Parse search results and get player stats
-                # This is simplified - full implementation would follow player links
-                return {
-                    'name': player_name,
-                    'avg_kills': 20.0,
-                    'avg_headshots': 8.0,
-                    'recent_form': 1.0
+                data = response.json()
+                
+                # Parse player stats
+                stats = {
+                    'id': player_id,
+                    'name': data.get('nickname', ''),
+                    'fullname': data.get('fullname', ''),
+                    'country': data.get('country', {}).get('name', ''),
+                    'team': data.get('team', {}).get('name', ''),
                 }
+                
+                # Get stats if available
+                if 'statistics' in data:
+                    stats_data = data['statistics']
+                    stats['rating'] = stats_data.get('rating', 0)
+                    stats['kills_per_round'] = stats_data.get('killsPerRound', 0)
+                    stats['deaths_per_round'] = stats_data.get('deathsPerRound', 0)
+                    stats['headshot_percentage'] = stats_data.get('headshotPercentage', 0)
+                
+                return stats
             
             return None
             
         except Exception as e:
             logger.error(f"Error fetching player stats: {e}")
             return None
+    
+    def fetch_teams(self) -> List[Dict]:
+        """Fetch top teams from HLTV API"""
+        try:
+            url = f"{self.api_base}/teams.json"
+            response = requests.get(url, headers=self.headers, timeout=10)
+            
+            if response.status_code == 200:
+                teams = response.json()
+                logger.info(f"Fetched {len(teams)} teams from HLTV API")
+                return teams
+            
+            return []
+            
+        except Exception as e:
+            logger.error(f"Error fetching teams: {e}")
+            return []
