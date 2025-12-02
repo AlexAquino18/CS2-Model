@@ -349,8 +349,8 @@ logger = logging.getLogger(__name__)
 async def startup_event():
     """Initialize data on startup"""
     logger.info("Starting CS2 Pro Projection API...")
-    await generate_mock_data()
-    logger.info("Mock data generated successfully")
+    await fetch_real_data()
+    logger.info("Data fetched successfully")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
