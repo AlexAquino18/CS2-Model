@@ -77,10 +77,16 @@ class CS2DataAggregator:
         
         logger.info(f"Fetched: {len(hltv_matches)} HLTV matches, {len(prizepicks_props)} PrizePicks props, {len(underdog_props)} Underdog props")
         
-        # If no real data available, try manual provider
+        # If we have HLTV matches, use them even without PrizePicks props
+        if hltv_matches:
+            logger.info("Using HLTV matches - generating sample props since PrizePicks unavailable")
+            matches, projections = self._combine_data_with_mock_props(hltv_matches, prizepicks_props, underdog_props)
+            return matches, projections
+        
+        # If no real data available at all
         if not hltv_matches and not prizepicks_props:
             logger.warning("No data available from scrapers, using sample data template")
-            logger.info("Note: PrizePicks and HLTV have anti-scraping protection (403 errors)")
+            logger.info("Note: PrizePicks blocked by anti-scraping protection")
             return [], []
         
         # Combine and process data
