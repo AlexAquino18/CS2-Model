@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,10 +6,10 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from typing import List, Optional, Dict
 import uuid
-from datetime import datetime, timezone
-
+from datetime import datetime, timezone, timedelta
+import asyncio
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -25,46 +25,253 @@ app = FastAPI()
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
-
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
+# Models
+class Player(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    name: str
+    team: str
+    avg_kills: float
+    avg_headshots: float
+    recent_form: float  # Last 5 games multiplier
+    map_stats: Dict[str, Dict[str, float]] = {}  # Map-specific stats
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
+class DFSLine(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    platform: str  # "prizepicks" or "underdog"
+    stat_type: str  # "kills" or "headshots"
+    line: float
+    maps: str  # "Map1+Map2"
 
-# Add your routes to the router instead of directly to app
+class Match(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    team1: str
+    team2: str
+    tournament: str
+    start_time: datetime
+    map1: str
+    map2: str
+    status: str = "upcoming"  # upcoming, live, completed
+
+class Projection(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    match_id: str
+    player_name: str
+    team: str
+    stat_type: str  # "kills" or "headshots"
+    projected_value: float
+    confidence: float  # 0-100
+    dfs_lines: List[DFSLine] = []
+    value_opportunity: bool = False
+    difference: float = 0.0  # Projection vs best DFS line
+
+class MatchWithProjections(BaseModel):
+    match: Match
+    projections: List[Projection]
+    last_updated: datetime
+
+# In-memory cache for demo (in production, use Redis or similar)
+data_cache = {
+    "matches": [],
+    "last_refresh": None
+}
+
+# Mock data generator
+async def generate_mock_data():
+    """Generate realistic mock data for CS2 matches and projections"""
+    from random import uniform, choice, randint
+    
+    teams = ["Navi", "FaZe Clan", "G2 Esports", "Vitality", "Liquid", "MOUZ", "Heroic", "Astralis"]
+    tournaments = ["IEM Katowice 2025", "BLAST Premier", "ESL Pro League", "PGL Major"]
+    maps = ["Mirage", "Dust2", "Inferno", "Nuke", "Ancient", "Anubis", "Overpass"]
+    players_by_team = {
+        "Navi": ["s1mple", "electronic", "b1t", "Aleksib", "iM"],
+        "FaZe Clan": ["rain", "karrigan", "ropz", "frozen", "broky"],
+        "G2 Esports": ["NiKo", "huNter", "m0NESY", "HooXi", "jks"],
+        "Vitality": ["ZywOo", "apEX", "Magisk", "Spinx", "flameZ"],
+        "Liquid": ["EliGE", "NAF", "Twistzz", "nitr0", "oSee"],
+        "MOUZ": ["frozen", "ropz", "JDC", "torzsi", "xertioN"],
+        "Heroic": ["cadiaN", "stavn", "TeSeS", "sjuush", "jabbi"],
+        "Astralis": ["BlameF", "k0nfig", "device", "Xyp9x", "br0"]
+    }
+    
+    matches = []
+    all_projections = []
+    
+    # Generate 6 upcoming matches
+    for i in range(6):
+        team1, team2 = choice(teams), choice(teams)
+        while team1 == team2:
+            team2 = choice(teams)
+        
+        match = Match(
+            id=str(uuid.uuid4()),
+            team1=team1,
+            team2=team2,
+            tournament=choice(tournaments),
+            start_time=datetime.now(timezone.utc) + timedelta(hours=randint(1, 72)),
+            map1=choice(maps),
+            map2=choice([m for m in maps if m != choice(maps)]),
+            status="upcoming"
+        )
+        matches.append(match)
+        
+        # Generate projections for all players in both teams
+        for team in [team1, team2]:
+            if team in players_by_team:
+                for player in players_by_team[team]:
+                    # Kills projection
+                    base_kills = uniform(30, 55)
+                    kills_projection = Projection(
+                        match_id=match.id,
+                        player_name=player,
+                        team=team,
+                        stat_type="kills",
+                        projected_value=round(base_kills, 1),
+                        confidence=round(uniform(65, 95), 1),
+                        dfs_lines=[
+                            DFSLine(
+                                platform="prizepicks",
+                                stat_type="kills",
+                                line=round(base_kills + uniform(-3, 3), 1),
+                                maps="Map1+Map2"
+                            ),
+                            DFSLine(
+                                platform="underdog",
+                                stat_type="kills",
+                                line=round(base_kills + uniform(-3, 3), 1),
+                                maps="Map1+Map2"
+                            )
+                        ]
+                    )
+                    
+                    # Calculate value opportunity
+                    avg_dfs_line = sum([line.line for line in kills_projection.dfs_lines]) / len(kills_projection.dfs_lines)
+                    kills_projection.difference = round(kills_projection.projected_value - avg_dfs_line, 1)
+                    kills_projection.value_opportunity = abs(kills_projection.difference) > 3.0
+                    
+                    all_projections.append(kills_projection)
+                    
+                    # Headshots projection
+                    base_hs = uniform(12, 25)
+                    hs_projection = Projection(
+                        match_id=match.id,
+                        player_name=player,
+                        team=team,
+                        stat_type="headshots",
+                        projected_value=round(base_hs, 1),
+                        confidence=round(uniform(65, 95), 1),
+                        dfs_lines=[
+                            DFSLine(
+                                platform="prizepicks",
+                                stat_type="headshots",
+                                line=round(base_hs + uniform(-2, 2), 1),
+                                maps="Map1+Map2"
+                            ),
+                            DFSLine(
+                                platform="underdog",
+                                stat_type="headshots",
+                                line=round(base_hs + uniform(-2, 2), 1),
+                                maps="Map1+Map2"
+                            )
+                        ]
+                    )
+                    
+                    avg_dfs_line = sum([line.line for line in hs_projection.dfs_lines]) / len(hs_projection.dfs_lines)
+                    hs_projection.difference = round(hs_projection.projected_value - avg_dfs_line, 1)
+                    hs_projection.value_opportunity = abs(hs_projection.difference) > 2.0
+                    
+                    all_projections.append(hs_projection)
+    
+    # Store in cache and database
+    data_cache["matches"] = matches
+    data_cache["projections"] = all_projections
+    data_cache["last_refresh"] = datetime.now(timezone.utc)
+    
+    # Store in MongoDB
+    if matches:
+        await db.matches.delete_many({})  # Clear old data
+        await db.matches.insert_many([m.model_dump() for m in matches])
+    
+    if all_projections:
+        await db.projections.delete_many({})
+        await db.projections.insert_many([p.model_dump() for p in all_projections])
+    
+    return matches, all_projections
+
+# API Endpoints
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "CS2 Pro Projection API", "status": "operational"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
+@api_router.get("/matches", response_model=List[MatchWithProjections])
+async def get_matches():
+    """Get all matches with their projections"""
+    # If no cached data, generate it
+    if not data_cache.get("matches"):
+        await generate_mock_data()
     
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
+    matches = data_cache.get("matches", [])
+    projections = data_cache.get("projections", [])
+    last_updated = data_cache.get("last_refresh", datetime.now(timezone.utc))
     
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
+    # Group projections by match
+    result = []
+    for match in matches:
+        match_projections = [p for p in projections if p.match_id == match.id]
+        result.append(MatchWithProjections(
+            match=match,
+            projections=match_projections,
+            last_updated=last_updated
+        ))
+    
+    return result
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
+@api_router.get("/matches/{match_id}")
+async def get_match_detail(match_id: str):
+    """Get detailed view of a specific match"""
+    matches = data_cache.get("matches", [])
+    projections = data_cache.get("projections", [])
     
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
+    match = next((m for m in matches if m.id == match_id), None)
+    if not match:
+        raise HTTPException(status_code=404, detail="Match not found")
     
-    return status_checks
+    match_projections = [p for p in projections if p.match_id == match_id]
+    
+    return MatchWithProjections(
+        match=match,
+        projections=match_projections,
+        last_updated=data_cache.get("last_refresh", datetime.now(timezone.utc))
+    )
+
+@api_router.post("/refresh")
+async def refresh_data():
+    """Manually trigger data refresh"""
+    try:
+        matches, projections = await generate_mock_data()
+        return {
+            "status": "success",
+            "matches_count": len(matches),
+            "projections_count": len(projections),
+            "last_updated": data_cache.get("last_refresh").isoformat()
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/stats")
+async def get_stats():
+    """Get overall statistics"""
+    projections = data_cache.get("projections", [])
+    value_opportunities = [p for p in projections if p.value_opportunity]
+    
+    return {
+        "total_projections": len(projections),
+        "value_opportunities": len(value_opportunities),
+        "avg_confidence": round(sum([p.confidence for p in projections]) / len(projections), 1) if projections else 0,
+        "last_refresh": data_cache.get("last_refresh").isoformat() if data_cache.get("last_refresh") else None
+    }
 
 # Include the router in the main app
 app.include_router(api_router)
@@ -83,6 +290,13 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize data on startup"""
+    logger.info("Starting CS2 Pro Projection API...")
+    await generate_mock_data()
+    logger.info("Mock data generated successfully")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
