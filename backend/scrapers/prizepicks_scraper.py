@@ -97,20 +97,24 @@ class PrizePicksScraper:
             return None
     
     def _fetch_league_props(self, league_id: int) -> List[Dict]:
-        """Fetch props for a specific league using correct API format"""
+        """Fetch props for a specific league using correct API format with HTTP/2"""
         try:
             # Use the exact format from StackOverflow
             url = f"{self.base_url}?league_id={league_id}&per_page=250&single_stat=true&game_mode=pickem"
             
             logger.info(f"Fetching props from: {url}")
-            response = requests.get(url, headers=self.headers, timeout=15)
             
-            if response.status_code == 200:
-                data = response.json()
-                return self._parse_projections(data)
-            else:
-                logger.warning(f"PrizePicks API returned status {response.status_code} for league {league_id}")
-                return []
+            # Use httpx with HTTP/2 support
+            with httpx.Client(http2=True, timeout=15) as client:
+                response = client.get(url, headers=self.headers)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    logger.info(f"Successfully fetched projections for league {league_id}")
+                    return self._parse_projections(data)
+                else:
+                    logger.warning(f"PrizePicks API returned status {response.status_code} for league {league_id}")
+                    return []
                 
         except Exception as e:
             logger.error(f"Error fetching league {league_id} props: {e}")
