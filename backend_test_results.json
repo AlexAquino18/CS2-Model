@@ -1,0 +1,46 @@
+{
+  "summary": {
+    "total_tests": 6,
+    "passed_tests": 6,
+    "success_rate": "100.0%",
+    "timestamp": "2025-12-02T23:23:32.739085"
+  },
+  "test_results": [
+    {
+      "test": "API Root Endpoint",
+      "status": "PASS",
+      "details": "Status: 200, Message: CS2 Pro Projection API",
+      "timestamp": "2025-12-02T23:23:32.500735"
+    },
+    {
+      "test": "Get Matches",
+      "status": "PASS",
+      "details": "Status: 200, Matches: 6, Projections: 20",
+      "timestamp": "2025-12-02T23:23:32.543631"
+    },
+    {
+      "test": "Get Stats",
+      "status": "PASS",
+      "details": "Status: 200, Projections: 120, Value Ops: 0, Avg Confidence: 80.0%",
+      "timestamp": "2025-12-02T23:23:32.582082"
+    },
+    {
+      "test": "Match Detail",
+      "status": "PASS",
+      "details": "Status: 200, Match ID: ae624954..., Projections: 20",
+      "timestamp": "2025-12-02T23:23:32.656122"
+    },
+    {
+      "test": "Refresh Data",
+      "status": "PASS",
+      "details": "Status: 200, Matches: 6, Projections: 120",
+      "timestamp": "2025-12-02T23:23:32.698183"
+    },
+    {
+      "test": "Invalid Match ID Handling",
+      "status": "PASS",
+      "details": "Status: 404 (Expected 404 for invalid ID)",
+      "timestamp": "2025-12-02T23:23:32.738291"
+    }
+  ]
+}
