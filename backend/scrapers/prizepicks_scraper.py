@@ -19,25 +19,26 @@ class PrizePicksScraper:
         })
     
     def fetch_cs2_props(self) -> List[Dict]:
-        """Fetch CS2 projections from PrizePicks API using StackOverflow solution"""
+        """Fetch CS2 projections from PrizePicks API - GitHub dannyphantomSS approach"""
         try:
-            # First, discover available leagues
-            cs2_league_id = self._discover_cs2_league_id()
+            # Get all available leagues
+            leagues = self._get_all_leagues()
+            
+            # Look for CS2/CSGO/Counter-Strike
+            cs2_league_id = None
+            for name, league_id in leagues.items():
+                if any(term in name.upper() for term in ['CS2', 'CS:2', 'COUNTER-STRIKE', 'CSGO', 'COUNTER STRIKE']):
+                    cs2_league_id = league_id
+                    logger.info(f"Found CS2 league: {name} (ID: {league_id})")
+                    break
             
             if cs2_league_id:
-                logger.info(f"Found CS2 league ID: {cs2_league_id}")
-                return self._fetch_league_props(cs2_league_id)
+                props = self._fetch_league_props(cs2_league_id, "CS2")
+                if props:
+                    logger.info(f"Successfully fetched {len(props)} CS2 props")
+                    return props
             
-            # If no CS2 league found, try fetching all and filtering
-            logger.info("Attempting to fetch all leagues and filter for CS2")
-            all_props = self._fetch_all_props()
-            cs2_props = [p for p in all_props if self._is_cs2_prop(p)]
-            
-            if cs2_props:
-                logger.info(f"Found {len(cs2_props)} CS2 props from all leagues")
-                return cs2_props
-            
-            logger.warning("No CS2 props found in PrizePicks")
+            logger.warning("No CS2 league found or no props available")
             return []
                 
         except Exception as e:
