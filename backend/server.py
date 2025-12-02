@@ -262,9 +262,9 @@ async def root():
 @api_router.get("/matches", response_model=List[MatchWithProjections])
 async def get_matches():
     """Get all matches with their projections"""
-    # If no cached data, generate it
+    # If no cached data, fetch it
     if not data_cache.get("matches"):
-        await generate_mock_data()
+        await fetch_real_data()
     
     matches = data_cache.get("matches", [])
     projections = data_cache.get("projections", [])
