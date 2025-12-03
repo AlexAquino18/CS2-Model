@@ -146,7 +146,7 @@ class PrizePicksScraper:
         cs2_indicators = ['cs2', 'cs:2', 'counter-strike', 'csgo', 'mirage', 'dust2', 'inferno', 'nuke']
         return any(indicator in game_info or indicator in player_name for indicator in cs2_indicators)
     
-    def _parse_projections(self, data: Dict) -> List[Dict]:
+    def _parse_props_response(self, data: Dict, sport: str) -> List[Dict]:
         """Parse projections from API response - improved parsing"""
         projections = []
         
