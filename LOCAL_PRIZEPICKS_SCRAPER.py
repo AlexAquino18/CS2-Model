@@ -72,7 +72,7 @@ def fetch_prizepicks_api_method():
                     print("⚠️  CS2 league not found. Trying to fetch all leagues...")
                     # Fetch all props and filter
                     all_props_url = "https://api.prizepicks.com/projections?per_page=250&single_stat=true&game_mode=pickem"
-                    props_response = client.get(all_props_url, headers=headers)
+                    props_response = session.get(all_props_url, timeout=10)
                     
                     if props_response.status_code == 200:
                         props_data = props_response.json()
