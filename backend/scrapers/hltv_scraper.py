@@ -63,6 +63,64 @@ class HLTVScraper:
             logger.error(f"Error fetching recent matches: {e}")
             return self._generate_realistic_current_matches()
     
+    def _parse_pandascore_matches(self, matches_data: List[Dict]) -> List[Dict]:
+        """Parse REAL matches from PandaScore API"""
+        matches = []
+        
+        try:
+            for i, match_data in enumerate(matches_data[:15]):  # Limit to 15 matches
+                try:
+                    # Get opponents
+                    opponents = match_data.get('opponents', [])
+                    if len(opponents) < 2:
+                        continue
+                    
+                    team1 = opponents[0].get('opponent', {}).get('name', 'Unknown')
+                    team2 = opponents[1].get('opponent', {}).get('name', 'Unknown')
+                    
+                    # Get match time
+                    scheduled_at = match_data.get('scheduled_at', '')
+                    try:
+                        match_time = datetime.fromisoformat(scheduled_at.replace('Z', '+00:00'))
+                    except:
+                        match_time = datetime.now(timezone.utc) + timedelta(hours=i+1)
+                    
+                    # Get tournament info
+                    league = match_data.get('league', {})
+                    series = match_data.get('serie', {})
+                    tournament = league.get('name', series.get('full_name', 'Unknown Tournament'))
+                    
+                    # Get match format
+                    number_of_games = match_data.get('number_of_games', 3)
+                    match_format = f"BO{number_of_games}"
+                    
+                    # Get match status
+                    status = match_data.get('status', 'not_started')
+                    
+                    match = {
+                        'id': str(match_data.get('id', f'panda_{i}')),
+                        'team1': team1,
+                        'team2': team2,
+                        'start_time': match_time,
+                        'tournament': tournament,
+                        'format': match_format,
+                        'stars': 0,
+                        'status': 'upcoming' if status == 'not_started' else status
+                    }
+                    
+                    matches.append(match)
+                    
+                except Exception as e:
+                    logger.debug(f"Error parsing individual PandaScore match: {e}")
+                    continue
+            
+            logger.info(f"✅ Parsed {len(matches)} REAL matches from PandaScore")
+            return matches
+            
+        except Exception as e:
+            logger.error(f"Error parsing PandaScore matches: {e}")
+            return []
+    
     def _parse_rapidapi_matches(self, matches_data: List[Dict], upcoming: bool = True) -> List[Dict]:
         """Parse matches from RapidAPI CS:GO Matches and Tournaments"""
         matches = []
