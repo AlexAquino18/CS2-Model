@@ -24,17 +24,44 @@ class FirecrawlPrizePicksScraper:
             # Try to scrape the API directly
             url = "https://api.prizepicks.com/projections?per_page=500&single_stat=true&game_mode=pickem"
             
-            result = self.app.scrape_url(url)
+            # Use correct method name: scrape (not scrape_url)
+            result = self.app.scrape(url, params={'formats': ['json']})
             
-            if result and 'data' in result:
-                logger.info("✅ Successfully scraped PrizePicks API with Firecrawl")
-                return self._parse_api_response(result['data'])
+            if result:
+                logger.info(f"✅ Firecrawl returned data: {type(result)}")
+                
+                # Check different possible response structures
+                if 'markdown' in result:
+                    # Try to parse markdown as JSON
+                    try:
+                        import json
+                        data = json.loads(result['markdown'])
+                        return self._parse_api_response(data)
+                    except:
+                        pass
+                
+                if 'html' in result:
+                    # Try to extract JSON from HTML
+                    try:
+                        import json
+                        data = json.loads(result['html'])
+                        return self._parse_api_response(data)
+                    except:
+                        pass
+                
+                if 'data' in result:
+                    return self._parse_api_response(result['data'])
+                
+                # Log what we got
+                logger.info(f"Firecrawl result keys: {result.keys() if isinstance(result, dict) else 'not a dict'}")
+                logger.warning("Could not find parseable data in Firecrawl response")
             
-            logger.warning("No data returned from Firecrawl scrape")
             return []
             
         except Exception as e:
             logger.error(f"Error using Firecrawl to scrape PrizePicks: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             return []
     
     def scrape_prizepicks_website(self) -> List[Dict]:
