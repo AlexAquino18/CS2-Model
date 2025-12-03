@@ -36,20 +36,10 @@ class PrizePicksScraper:
                     sample_leagues = set([p.get('league_name', 'Unknown') for p in props[:50]])
                     logger.info(f"Sample leagues in props: {sorted(sample_leagues)}")
                     
-                    # Debug first prop
-                    if props:
-                        first = props[0]
-                        logger.info(f"First prop debug - league_id: '{first.get('league_id')}' (type: {type(first.get('league_id'))}), league_name: '{first.get('league_name')}'")
-                    
-                    # Filter for CS2 only
-                    cs2_props = [p for p in props if self._is_cs2_prop(p)]
-                    logger.info(f"After filtering, found {len(cs2_props)} CS2 props")
-                    
-                    if cs2_props:
-                        logger.info(f"✅ Found {len(cs2_props)} CS2 props via Firecrawl")
-                        return cs2_props
-                    else:
-                        logger.warning("CS2 props may not be available on PrizePicks right now")
+                    # Since we're already fetching league_id=265 (CS2), all props should be CS2
+                    # Just return them directly
+                    logger.info(f"✅ Found {len(props)} CS2 props via Firecrawl!")
+                    return props
             except Exception as fc_error:
                 logger.warning(f"Firecrawl attempt failed: {fc_error}")
             
