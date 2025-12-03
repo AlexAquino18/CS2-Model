@@ -116,21 +116,71 @@ class CS2StatsFetcher:
             logger.error(f"Error fetching stats for {player_name}: {e}")
             return None
     
-    def _calculate_form_from_player_data(self, player_data: Dict) -> float:
+    def _calculate_form_from_real_stats(self, player_name: str, stats_data: Dict) -> float:
         """
-        Calculate form multiplier from player data
+        Calculate form multiplier from REAL PandaScore stats
         
-        This is a simplified version. In production, you'd fetch recent matches
-        and calculate based on actual performance trends.
+        Stats structure from /csgo/players/{id}/stats:
+        {
+            "kills": int,
+            "deaths": int,
+            "assists": int,
+            "kd_ratio": float,
+            "headshots": int,
+            "headshot_percentage": float,
+            "average_kills_per_round": float,
+            "average_deaths_per_round": float
+        }
         """
-        # For now, return neutral form - you can enhance this
-        # by fetching recent match stats
-        
-        # If player has current_team, they're likely active = good form
-        if player_data.get('current_team'):
-            return 1.05  # Slight boost for active players
-        
-        return 1.0
+        try:
+            # Extract key stats
+            kd_ratio = stats_data.get('kd_ratio', 1.0)
+            avg_kills_per_round = stats_data.get('average_kills_per_round', 0.7)
+            headshot_pct = stats_data.get('headshot_percentage', 50.0)
+            
+            logger.info(f"📈 {player_name} stats: K/D={kd_ratio:.2f}, Kills/Rnd={avg_kills_per_round:.2f}, HS%={headshot_pct:.1f}%")
+            
+            # Calculate form based on multiple factors
+            form_multiplier = 1.0
+            
+            # K/D Ratio impact (most important)
+            if kd_ratio >= 1.3:  # Elite K/D
+                form_multiplier += 0.15
+            elif kd_ratio >= 1.2:  # Excellent K/D
+                form_multiplier += 0.12
+            elif kd_ratio >= 1.1:  # Very good K/D
+                form_multiplier += 0.08
+            elif kd_ratio >= 1.0:  # Good K/D
+                form_multiplier += 0.05
+            elif kd_ratio >= 0.9:  # Decent K/D
+                form_multiplier += 0.02
+            elif kd_ratio < 0.8:  # Struggling
+                form_multiplier -= 0.10
+            elif kd_ratio < 0.9:  # Below average
+                form_multiplier -= 0.05
+            
+            # Kills per round impact
+            if avg_kills_per_round >= 0.85:  # Elite fragger
+                form_multiplier += 0.05
+            elif avg_kills_per_round >= 0.75:  # Strong fragger
+                form_multiplier += 0.03
+            elif avg_kills_per_round < 0.6:  # Low impact
+                form_multiplier -= 0.03
+            
+            # Headshot percentage (indicates form/sharpness)
+            if headshot_pct >= 55:  # Very sharp
+                form_multiplier += 0.02
+            elif headshot_pct < 45:  # Not clicking heads
+                form_multiplier -= 0.02
+            
+            # Clamp between 0.85 and 1.15
+            form_multiplier = max(0.85, min(1.15, form_multiplier))
+            
+            return round(form_multiplier, 2)
+            
+        except Exception as e:
+            logger.warning(f"Error calculating form from stats: {e}")
+            return 1.0
     
     def fetch_team_rating(self, team_name: str) -> Optional[float]:
         """
