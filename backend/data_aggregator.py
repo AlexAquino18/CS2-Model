@@ -105,10 +105,49 @@ class CS2DataAggregator:
         matches = []
         all_projections = []
         
-        # Common player names for CS2 teams
-        player_pools = {
-            'default': ['player1', 'player2', 'player3', 'player4', 'player5']
-        }
+        # Generate realistic player names based on common CS2 player naming patterns
+        def generate_player_names(team_name: str, num_players: int = 5) -> list:
+            """Generate realistic CS2 player names"""
+            # Common CS2 naming patterns
+            prefixes = ['', '', '', 'fl', 'fr', 'cl', 'br', 's', 'k', 'x', 'z']
+            suffixes = ['', '', '', 'z', 'x', 's', 'n', 'r', 'y', 'a']
+            adjectives = ['cold', 'quick', 'sharp', 'ace', 'peak', 'toxic', 'silent', 'mad', 'wild', 'rush']
+            nouns = ['aim', 'shot', 'fire', 'storm', 'blade', 'hawk', 'wolf', 'ghost', 'king', 'boss']
+            
+            import random
+            player_names = []
+            used_names = set()
+            
+            # Use team abbreviation if available
+            team_abbr = ''.join([c for c in team_name[:3] if c.isalnum()]).lower()
+            
+            for i in range(num_players):
+                while True:
+                    # Generate different styles of names
+                    style = random.randint(1, 5)
+                    
+                    if style == 1:  # Simple word
+                        name = random.choice(adjectives + nouns)
+                    elif style == 2:  # Prefix + word
+                        name = random.choice(prefixes) + random.choice(nouns)
+                    elif style == 3:  # Word + suffix
+                        name = random.choice(adjectives) + random.choice(suffixes)
+                    elif style == 4:  # Team_PlayerNumber
+                        name = f"{team_abbr}{i+1}"
+                    else:  # Compound word
+                        name = random.choice(adjectives) + random.choice(nouns)
+                    
+                    # Make it lowercase and check uniqueness
+                    name = name.lower()
+                    if name not in used_names:
+                        used_names.add(name)
+                        player_names.append(name)
+                        break
+            
+            return player_names
+        
+        # Player name cache to keep consistency
+        player_pools = {}
         
         for hltv_match in hltv_matches[:10]:  # Limit to 10 matches
             match_id = str(uuid.uuid4())
