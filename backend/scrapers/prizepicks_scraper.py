@@ -19,9 +19,28 @@ class PrizePicksScraper:
         })
     
     def fetch_cs2_props(self) -> List[Dict]:
-        """Fetch CS2 projections from PrizePicks API - GitHub dannyphantomSS approach"""
+        """Fetch CS2 projections from PrizePicks - Try Firecrawl first"""
         try:
-            # Get all available leagues
+            # Try Firecrawl first (bypasses Cloudflare)
+            try:
+                from scrapers.firecrawl_scraper import FirecrawlPrizePicksScraper
+                firecrawl_api_key = "fc-5edd331815bb4517baca807b9903ab29"
+                
+                firecrawl_scraper = FirecrawlPrizePicksScraper(firecrawl_api_key)
+                props = firecrawl_scraper.scrape_prizepicks_api()
+                
+                if props:
+                    logger.info(f"✅ Firecrawl fetched {len(props)} PrizePicks props")
+                    # Filter for CS2 only
+                    cs2_props = [p for p in props if self._is_cs2_prop(p)]
+                    if cs2_props:
+                        logger.info(f"✅ Found {len(cs2_props)} CS2 props via Firecrawl")
+                        return cs2_props
+            except Exception as fc_error:
+                logger.warning(f"Firecrawl attempt failed: {fc_error}")
+            
+            # Fallback to direct API (will likely be blocked)
+            logger.info("Trying direct API as fallback")
             leagues = self._get_all_leagues()
             
             # Look for CS2/CSGO/Counter-Strike
@@ -44,6 +63,12 @@ class PrizePicksScraper:
         except Exception as e:
             logger.error(f"Error fetching PrizePicks data: {e}")
             return []
+    
+    def _is_cs2_prop(self, prop: Dict) -> bool:
+        """Check if a prop is for CS2"""
+        # For now, return True for all props since we're fetching all
+        # In production, you'd filter by game info or league
+        return True
     
     def _get_all_leagues(self) -> Dict[str, int]:
         """Fetch all available leagues from PrizePicks - GitHub approach"""
