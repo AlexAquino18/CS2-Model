@@ -101,3 +101,126 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+user_problem_statement: Build CS2 statistics projection app that fetches matches and compares PrizePicks/Underdog Fantasy lines
+
+backend:
+  - task: "Fetch real CS2 matches from PandaScore"
+    implemented: true
+    working: true
+    file: "backend/scrapers/hltv_scraper.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        -working: true
+        -agent: "main"
+        -comment: "Successfully fetching 15 matches from PandaScore API with team names, tournaments, and start times"
+
+  - task: "Fetch PrizePicks CS2 props via Firecrawl"
+    implemented: true
+    working: true
+    file: "backend/scrapers/firecrawl_scraper.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        -working: true
+        -agent: "main"
+        -comment: "Successfully fetching 358 CS2 props from PrizePicks. Firecrawl bypasses Cloudflare protection. Now extracting team info from player attributes."
+
+  - task: "Player-to-team assignment in match projections"
+    implemented: true
+    working: true
+    file: "backend/data_aggregator.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        -working: false
+        -agent: "user"
+        -comment: "User reported: Players not assigned to correct teams on match detail page"
+        -working: true
+        -agent: "main"
+        -comment: "FIXED - Root cause: PrizePicks API includes team in player.attributes.team field. Updated firecrawl_scraper.py to extract team info. Updated data_aggregator.py _find_matching_props to use fuzzy team matching. Tested with curl showing ARCRED players under ARCRED, SPARTA under SPARTA. Screenshot verified UI shows correct team sections."
+
+  - task: "Underdog Fantasy scraper implementation"
+    implemented: true
+    working: false
+    file: "backend/scrapers/firecrawl_scraper.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        -working: false
+        -agent: "main"
+        -comment: "Underdog API returns 422 cdn_circuit_breaker error. API is blocking all requests. Not a code issue - API unavailable. Added proper error handling and logging. Status correctly shows as unavailable in frontend."
+
+frontend:
+  - task: "Match detail page with team-separated player projections"
+    implemented: true
+    working: true
+    file: "frontend/src/pages/MatchDetail.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        -working: true
+        -agent: "main"
+        -comment: "Verified via screenshot. Players correctly grouped under their team sections. ARCRED section shows ARCRED players (DSSj, Get_Jeka, Ryujin, Raijin, Chill). SPARTA section shows SPARTA players (1NVISIBLEE, Djon8, yuramyata, SoLb, k4nfuz)"
+
+  - task: "Data source status banner"
+    implemented: true
+    working: true
+    file: "frontend/src/components/DataSourceBanner.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        -working: true
+        -agent: "main"
+        -comment: "Correctly displays: PandaScore (Connected), PrizePicks (Connected), Underdog (Unavailable). Shows detailed error messages when expanded."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: true
+
+test_plan:
+  current_focus:
+    - "Player-to-team assignment fix - COMPLETE"
+    - "Underdog scraper investigation - COMPLETE (API blocked)"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+    -agent: "main"
+    -message: "Fixed P0 player-to-team bug. PrizePicks API includes team in player attributes. Implemented fuzzy team name matching in data_aggregator.py to handle variations like 'FaZe' vs 'FaZe Clan'. Verified working via curl and screenshots."
+    -agent: "main"
+    -message: "P1 Underdog issue investigated. API returns 422 cdn_circuit_breaker - this is an API-level block, not fixable without API access. Added proper error handling. Frontend correctly shows Underdog as unavailable."
+
+## Manual Testing Results - 2025-12-03
+
+### Issue 1: Player-to-Team Assignment (P0) - ✅ FIXED
+
+**Files Modified:**
+- `/app/backend/scrapers/firecrawl_scraper.py` - Added team extraction from PrizePicks API
+- `/app/backend/data_aggregator.py` - Implemented fuzzy team matching in `_find_matching_props()`
+
+**Testing Evidence:**
+```bash
+# Curl test showing correct team assignment
+curl http://localhost:8001/api/matches | grep -A 5 "ARCRED"
+# Result: ARCRED players (DSSj, Get_Jeka, Ryujin, Raijin, Chill) under ARCRED team
+#         SPARTA players (1NVISIBLEE, Djon8, yuramyata, SoLb, k4nfuz) under SPARTA team
+```
+
+**Screenshot verification:** Match detail page shows proper team separation
+
+### Issue 2: Underdog Fantasy Scraper (P1) - ❌ API BLOCKED
+
+**Status:** Underdog API is blocking all requests with 422 cdn_circuit_breaker error
+**Action Taken:** Added error handling and logging. Frontend shows proper status.
+**Resolution:** Not fixable without Underdog API access or official API key
+
