@@ -2,9 +2,11 @@ import logging
 from typing import List, Dict, Tuple
 from datetime import datetime, timezone
 import uuid
+import os
 from scrapers import PrizePicksScraper, UnderdogScraper, HLTVScraper
 from scrapers.manual_input import ManualDataProvider
 from projection_model import CS2ProjectionModel
+from stats_fetcher import CS2StatsFetcher
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +18,24 @@ class CS2DataAggregator:
         self.underdog_scraper = UnderdogScraper()
         self.hltv_scraper = HLTVScraper()
         self.manual_provider = ManualDataProvider()
-        self.projection_model = CS2ProjectionModel()  # Add projection model
+        
+        # Initialize stats fetcher (optional - controlled by env var)
+        enable_real_data = os.environ.get('ENABLE_REAL_STATS', 'false').lower() == 'true'
+        pandascore_key = "paR1oQjXNqVecsLSmUGx-n8O1Vpdj5HEZgmF9ZKFD2vYiUzHDso"
+        
+        stats_fetcher = CS2StatsFetcher(
+            pandascore_api_key=pandascore_key,
+            enable_real_data=enable_real_data
+        )
+        
+        if enable_real_data:
+            logger.info("🔥 REAL DATA MODE ENABLED - Using PandaScore API for stats")
+        else:
+            logger.info("📊 Using mock data for projections (set ENABLE_REAL_STATS=true to enable real data)")
+        
+        # Initialize projection model with stats fetcher
+        self.projection_model = CS2ProjectionModel(stats_fetcher=stats_fetcher)
+        
         self.scraping_status = {
             'hltv': {'success': False, 'error': None, 'last_attempt': None},
             'prizepicks': {'success': False, 'error': None, 'last_attempt': None},
