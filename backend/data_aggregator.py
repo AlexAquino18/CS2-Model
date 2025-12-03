@@ -7,6 +7,7 @@ from scrapers import PrizePicksScraper, UnderdogScraper, HLTVScraper
 from scrapers.manual_input import ManualDataProvider
 from projection_model import CS2ProjectionModel
 from stats_fetcher import CS2StatsFetcher
+from line_tracker import LineMovementTracker
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +19,9 @@ class CS2DataAggregator:
         self.underdog_scraper = UnderdogScraper()
         self.hltv_scraper = HLTVScraper()
         self.manual_provider = ManualDataProvider()
+        
+        # Initialize line movement tracker
+        self.line_tracker = LineMovementTracker()
         
         # Initialize stats fetcher (optional - controlled by env var)
         enable_real_data = os.environ.get('ENABLE_REAL_STATS', 'false').lower() == 'true'
