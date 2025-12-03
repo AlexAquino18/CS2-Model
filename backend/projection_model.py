@@ -236,6 +236,11 @@ class CS2ProjectionModel:
     
     def get_model_info(self) -> Dict:
         """Return model configuration and stats"""
+        data_source = 'mock_historical_data'
+        if self.stats_fetcher:
+            stats_info = self.stats_fetcher.get_stats_info()
+            data_source = f"hybrid ({stats_info['status']})"
+        
         return {
             'model_version': '1.0',
             'model_type': 'hybrid_statistical',
@@ -253,6 +258,7 @@ class CS2ProjectionModel:
                 'Confidence scoring',
                 'Value opportunity detection'
             ],
-            'data_source': 'mock_historical_data',
-            'ready_for_real_data': True
+            'data_source': data_source,
+            'ready_for_real_data': True,
+            'stats_fetcher': self.stats_fetcher.get_stats_info() if self.stats_fetcher else None
         }
