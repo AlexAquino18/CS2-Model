@@ -103,6 +103,13 @@ const Dashboard = () => {
                 </div>
               )}
               <Button
+                onClick={() => window.location.href = '/line-movements'}
+                className="bg-accent text-accent-foreground font-black uppercase tracking-wider hover:bg-accent/90 active:scale-95 transition-all rounded-sm"
+              >
+                <TrendingUp className="w-4 h-4 mr-2" />
+                LINE MOVES
+              </Button>
+              <Button
                 data-testid="refresh-button"
                 onClick={handleRefresh}
                 disabled={refreshing}
