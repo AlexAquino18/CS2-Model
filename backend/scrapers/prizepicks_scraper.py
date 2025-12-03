@@ -76,8 +76,11 @@ class PrizePicksScraper:
     def _is_cs2_prop(self, prop: Dict) -> bool:
         """Check if a prop is for CS2"""
         # Check if the prop has CS2-related information
-        # CS2 league ID is 265 on PrizePicks
-        return prop.get('league_id') == '265' or prop.get('league_name', '').upper() == 'CS2'
+        # CS2 league ID is 265 on PrizePicks (can be string or int)
+        league_id = str(prop.get('league_id', ''))
+        league_name = prop.get('league_name', '').upper()
+        
+        return league_id == '265' or league_name == 'CS2'
     
     def _get_all_leagues(self) -> Dict[str, int]:
         """Fetch all available leagues from PrizePicks - GitHub approach"""
