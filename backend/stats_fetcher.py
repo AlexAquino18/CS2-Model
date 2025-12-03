@@ -185,6 +185,7 @@ class CS2StatsFetcher:
     def fetch_team_rating(self, team_name: str) -> Optional[float]:
         """
         Fetch team's strength rating (0.85 - 1.15)
+        Uses REAL stats from PandaScore /csgo/teams/{id}/stats endpoint
         
         Returns:
             Team rating based on recent performance
@@ -201,7 +202,7 @@ class CS2StatsFetcher:
             return self.team_cache[cache_key]
         
         try:
-            logger.info(f"Fetching real rating for {team_name}...")
+            logger.info(f"Fetching REAL team stats for {team_name}...")
             
             # Search for team
             search_url = f"{self.base_url}/teams"
@@ -223,16 +224,33 @@ class CS2StatsFetcher:
                 logger.info(f"Team {team_name} not found in PandaScore")
                 return None
             
-            team_data = teams[0]
+            team_id = teams[0]['id']
             
-            # Calculate rating from team data
-            rating = self._calculate_team_rating_from_data(team_data)
+            # FETCH ACTUAL TEAM STATS from /csgo/teams/{id}/stats
+            stats_url = f"{self.base_url}/teams/{team_id}/stats"
+            
+            stats_response = requests.get(
+                stats_url,
+                headers=self.headers,
+                timeout=5
+            )
+            
+            if stats_response.status_code == 200:
+                stats_data = stats_response.json()
+                logger.info(f"📊 Got REAL team stats for {team_name} from PandaScore")
+                
+                # Calculate rating from real stats
+                rating = self._calculate_team_rating_from_real_stats(team_name, stats_data)
+            else:
+                # Fallback
+                logger.info(f"Stats endpoint unavailable for {team_name}, using basic data")
+                rating = 1.05 if teams[0].get('players') else 1.0
             
             # Cache the result
             self.team_cache[cache_key] = rating
             self.cache_timestamp[cache_key] = time.time()
             
-            logger.info(f"✅ Real data for {team_name}: rating={rating}")
+            logger.info(f"✅ Real rating for {team_name}: {rating}")
             
             return rating
             
@@ -243,18 +261,68 @@ class CS2StatsFetcher:
             logger.error(f"Error fetching team rating for {team_name}: {e}")
             return None
     
-    def _calculate_team_rating_from_data(self, team_data: Dict) -> float:
+    def _calculate_team_rating_from_real_stats(self, team_name: str, stats_data: Dict) -> float:
         """
-        Calculate team rating from team data
+        Calculate team rating from REAL PandaScore team stats
         
-        This is simplified. In production, fetch recent match results
-        and calculate win rate.
+        Stats structure from /csgo/teams/{id}/stats:
+        {
+            "wins": int,
+            "losses": int,
+            "draws": int,
+            "win_rate": float,
+            "total_kills": int,
+            "total_deaths": int,
+            "average_kills_per_round": float,
+            "average_deaths_per_round": float,
+            "rounds_won": int,
+            "rounds_lost": int
+        }
         """
-        # Check if team has players (active team)
-        if team_data.get('players') and len(team_data.get('players', [])) >= 5:
-            return 1.05  # Active teams get slight boost
-        
-        return 1.0
+        try:
+            # Extract key stats
+            win_rate = stats_data.get('win_rate', 50.0)
+            wins = stats_data.get('wins', 0)
+            losses = stats_data.get('losses', 0)
+            avg_kills_per_round = stats_data.get('average_kills_per_round', 0.0)
+            
+            logger.info(f"📈 {team_name} stats: Win Rate={win_rate:.1f}%, W-L={wins}-{losses}, Kills/Rnd={avg_kills_per_round:.2f}")
+            
+            # Calculate rating based on win rate
+            rating = 1.0
+            
+            # Win rate impact (most important factor)
+            if win_rate >= 70:  # Elite team
+                rating = 1.15
+            elif win_rate >= 65:  # Top tier
+                rating = 1.12
+            elif win_rate >= 60:  # Strong team
+                rating = 1.10
+            elif win_rate >= 55:  # Above average
+                rating = 1.07
+            elif win_rate >= 50:  # Average
+                rating = 1.03
+            elif win_rate >= 45:  # Below average
+                rating = 0.97
+            elif win_rate >= 40:  # Struggling
+                rating = 0.92
+            else:  # Poor team
+                rating = 0.85
+            
+            # Adjust for team firepower (kills per round)
+            if avg_kills_per_round >= 3.5:  # High firepower
+                rating += 0.03
+            elif avg_kills_per_round < 3.0:  # Low firepower
+                rating -= 0.03
+            
+            # Clamp between 0.85 and 1.15
+            rating = max(0.85, min(1.15, rating))
+            
+            return round(rating, 2)
+            
+        except Exception as e:
+            logger.warning(f"Error calculating team rating from stats: {e}")
+            return 1.0
     
     def get_stats_info(self) -> Dict:
         """Return information about stats fetcher status"""
