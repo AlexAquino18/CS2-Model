@@ -60,7 +60,7 @@ def fetch_prizepicks_api_method():
                 # Fetch projections for CS2 if found
                 if cs2_league_id:
                     props_url = f"https://api.prizepicks.com/projections?league_id={cs2_league_id}&per_page=250&single_stat=true&game_mode=pickem"
-                    props_response = client.get(props_url, headers=headers)
+                    props_response = session.get(props_url, timeout=10)
                     
                     if props_response.status_code == 200:
                         props_data = props_response.json()
