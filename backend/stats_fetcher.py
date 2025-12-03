@@ -40,9 +40,10 @@ class CS2StatsFetcher:
     def fetch_player_recent_form(self, player_name: str) -> Optional[float]:
         """
         Fetch player's recent form multiplier (0.85 - 1.15)
+        Uses REAL stats from PandaScore /csgo/players/{id}/stats endpoint
         
         Returns:
-            Form multiplier based on recent K/D ratio
+            Form multiplier based on recent K/D ratio and performance
             None if data unavailable
         """
         if not self.enable_real_data:
@@ -56,7 +57,7 @@ class CS2StatsFetcher:
             return self.player_cache[cache_key]
         
         try:
-            logger.info(f"Fetching real form data for {player_name}...")
+            logger.info(f"Fetching REAL stats for {player_name}...")
             
             # Search for player
             search_url = f"{self.base_url}/players"
@@ -79,17 +80,32 @@ class CS2StatsFetcher:
                 return None
             
             player_id = players[0]['id']
-            player_data = players[0]
             
-            # Try to extract stats from player data
-            # PandaScore structure may vary - adjust as needed
-            form_multiplier = self._calculate_form_from_player_data(player_data)
+            # FETCH ACTUAL PLAYER STATS from /csgo/players/{id}/stats
+            stats_url = f"{self.base_url}/players/{player_id}/stats"
+            
+            stats_response = requests.get(
+                stats_url,
+                headers=self.headers,
+                timeout=5
+            )
+            
+            if stats_response.status_code == 200:
+                stats_data = stats_response.json()
+                logger.info(f"📊 Got REAL stats for {player_name} from PandaScore")
+                
+                # Calculate form from real stats
+                form_multiplier = self._calculate_form_from_real_stats(player_name, stats_data)
+            else:
+                # Fallback if stats endpoint unavailable
+                logger.info(f"Stats endpoint unavailable for {player_name}, using basic data")
+                form_multiplier = 1.05 if players[0].get('current_team') else 1.0
             
             # Cache the result
             self.player_cache[cache_key] = form_multiplier
             self.cache_timestamp[cache_key] = time.time()
             
-            logger.info(f"✅ Real data for {player_name}: form={form_multiplier}")
+            logger.info(f"✅ Real form for {player_name}: {form_multiplier}x")
             
             return form_multiplier
             
