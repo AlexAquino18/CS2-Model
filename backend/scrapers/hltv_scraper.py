@@ -97,10 +97,16 @@ class HLTVScraper:
                     # Get match status
                     status = match_data.get('status', 'not_started')
                     
+                    # Get team IDs for player lookup
+                    team1_id = opponents[0].get('opponent', {}).get('id')
+                    team2_id = opponents[1].get('opponent', {}).get('id')
+                    
                     match = {
                         'id': str(match_data.get('id', f'panda_{i}')),
                         'team1': team1,
                         'team2': team2,
+                        'team1_id': team1_id,
+                        'team2_id': team2_id,
                         'start_time': match_time,
                         'tournament': tournament,
                         'format': match_format,
