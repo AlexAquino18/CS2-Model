@@ -260,12 +260,13 @@ class CS2DataAggregator:
         """Combine data from different sources"""
         matches = []
         all_projections = []
+        matches_with_props = 0
         
         # Process each HLTV match
         for hltv_match in hltv_matches:
             match_id = str(uuid.uuid4())
             
-            # Find matching props for this match FIRST (to determine if match should be included)
+            # Find matching props for this match
             raw_props = self._find_matching_props(
                 match_id,
                 hltv_match,
@@ -273,12 +274,7 @@ class CS2DataAggregator:
                 underdog_props
             )
             
-            # Skip matches without any PrizePicks props
-            if not raw_props:
-                logger.debug(f"Skipping match {hltv_match['team1']} vs {hltv_match['team2']} - no PrizePicks props available")
-                continue
-            
-            # Create match object (only for matches with props)
+            # Create match object for ALL matches (with or without props)
             match = {
                 'id': match_id,
                 'team1': hltv_match['team1'],
@@ -287,39 +283,45 @@ class CS2DataAggregator:
                 'start_time': hltv_match['start_time'].isoformat(),
                 'map1': 'TBD',
                 'map2': 'TBD',
-                'status': 'upcoming'
+                'status': 'upcoming',
+                'has_props': len(raw_props) > 0  # Flag to indicate if props are available
             }
             matches.append(match)
             
-            # Generate projections using the model
-            match_projections = self.projection_model.generate_match_projections(
-                match_id=match_id,
-                team1=match['team1'],
-                team2=match['team2'],
-                player_props=raw_props
-            )
-            
-            # Add line movement data to each projection
-            for projection in match_projections:
-                player_name = projection['player_name']
-                stat_type = projection['stat_type']
+            if raw_props:
+                matches_with_props += 1
                 
-                # Get line movement for each DFS platform
-                for dfs_line in projection.get('dfs_lines', []):
-                    platform = dfs_line['platform']
-                    movement = self.line_tracker.get_line_movement(player_name, stat_type, platform)
+                # Generate projections using the model
+                match_projections = self.projection_model.generate_match_projections(
+                    match_id=match_id,
+                    team1=match['team1'],
+                    team2=match['team2'],
+                    player_props=raw_props
+                )
+                
+                # Add line movement data to each projection
+                for projection in match_projections:
+                    player_name = projection['player_name']
+                    stat_type = projection['stat_type']
                     
-                    if movement:
-                        dfs_line['line_movement'] = {
-                            'previous_line': movement['previous_line'],
-                            'movement': movement['movement'],
-                            'direction': movement['movement_direction'],
-                            'is_significant': movement['is_significant']
-                        }
-            
-            all_projections.extend(match_projections)
+                    # Get line movement for each DFS platform
+                    for dfs_line in projection.get('dfs_lines', []):
+                        platform = dfs_line['platform']
+                        movement = self.line_tracker.get_line_movement(player_name, stat_type, platform)
+                        
+                        if movement:
+                            dfs_line['line_movement'] = {
+                                'previous_line': movement['previous_line'],
+                                'movement': movement['movement'],
+                                'direction': movement['movement_direction'],
+                                'is_significant': movement['is_significant']
+                            }
+                
+                all_projections.extend(match_projections)
+            else:
+                logger.info(f"📊 Match {hltv_match['team1']} vs {hltv_match['team2']} - no PrizePicks props available")
         
-        logger.info(f"✅ Filtered to {len(matches)} matches with PrizePicks props (from {len(hltv_matches)} total)")
+        logger.info(f"✅ Showing all {len(matches)} matches ({matches_with_props} with props, {len(matches) - matches_with_props} without props)")
         
         return matches, all_projections
     
