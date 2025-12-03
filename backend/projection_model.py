@@ -50,7 +50,15 @@ class CS2ProjectionModel:
         }
     
     def get_team_rating(self, team_name: str) -> float:
-        """Get team strength rating"""
+        """Get team strength rating - with real data support"""
+        # Try to get real data first
+        if self.stats_fetcher:
+            real_rating = self.stats_fetcher.fetch_team_rating(team_name)
+            if real_rating is not None:
+                logger.info(f"📊 Using REAL rating for {team_name}: {real_rating}")
+                return real_rating
+        
+        # Fallback to mock ratings
         # Try exact match first
         if team_name in self.team_ratings:
             return self.team_ratings[team_name]
