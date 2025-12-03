@@ -252,11 +252,19 @@ class CS2DataAggregator:
             matches.append(match)
             
             # Find matching props for this match
-            match_projections = self._find_matching_props(
+            raw_props = self._find_matching_props(
                 match_id,
                 hltv_match,
                 prizepicks_props,
                 underdog_props
+            )
+            
+            # Generate projections using the model
+            match_projections = self.projection_model.generate_match_projections(
+                match_id=match_id,
+                team1=match['team1'],
+                team2=match['team2'],
+                player_props=raw_props
             )
             
             all_projections.extend(match_projections)
