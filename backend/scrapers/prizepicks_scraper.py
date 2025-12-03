@@ -320,8 +320,23 @@ class UnderdogScraper:
         })
     
     def fetch_cs2_props(self) -> List[Dict]:
-        """Fetch CS2/esports projections from Underdog"""
+        """Fetch CS2/esports projections from Underdog - Try Firecrawl first"""
         try:
+            # Try Firecrawl first (bypasses Cloudflare)
+            try:
+                from scrapers.firecrawl_scraper import FirecrawlUnderdogScraper
+                firecrawl_api_key = "fc-5edd331815bb4517baca807b9903ab29"
+                
+                firecrawl_scraper = FirecrawlUnderdogScraper(firecrawl_api_key)
+                props = firecrawl_scraper.scrape_underdog_api()
+                
+                if props:
+                    logger.info(f"✅ Firecrawl fetched {len(props)} Underdog props")
+                    return props
+            except Exception as fc_error:
+                logger.warning(f"Firecrawl attempt failed for Underdog: {fc_error}")
+            
+            # Fallback to direct API
             response = self.session.get(self.base_url, timeout=10)
             
             if response.status_code == 200:
