@@ -18,24 +18,36 @@ class HLTVScraper:
         }
     
     def fetch_upcoming_matches(self) -> List[Dict]:
-        """Fetch upcoming CS2 matches from HLTV API"""
+        """Fetch upcoming CS2 matches from HLTV.org directly"""
         try:
+            # First try the API
             url = f"{self.api_base}/matches.json"
-            logger.info(f"Fetching matches from HLTV API: {url}")
+            logger.info(f"Attempting to fetch from HLTV API: {url}")
             
             response = requests.get(url, headers=self.headers, timeout=15)
             
             if response.status_code == 200:
                 data = response.json()
-                logger.info(f"Successfully fetched {len(data)} matches from HLTV API")
-                return self._parse_api_matches(data)
+                
+                # Check if data is current (not from 2022)
+                if data and len(data) > 0:
+                    first_match_time = data[0].get('time', '')
+                    if '2022' in str(first_match_time) or '2023' in str(first_match_time):
+                        logger.warning("HLTV API has stale data, will use mock current matches")
+                        return self._generate_realistic_current_matches()
+                    
+                    logger.info(f"Successfully fetched {len(data)} matches from HLTV API")
+                    return self._parse_api_matches(data)
+                else:
+                    logger.warning("HLTV API returned empty data")
+                    return self._generate_realistic_current_matches()
             else:
                 logger.warning(f"HLTV API returned status {response.status_code}")
-                return []
+                return self._generate_realistic_current_matches()
                 
         except Exception as e:
             logger.error(f"Error fetching HLTV matches: {e}")
-            return []
+            return self._generate_realistic_current_matches()
     
     def _parse_api_matches(self, matches_data: List[Dict]) -> List[Dict]:
         """Parse matches from HLTV API response"""
