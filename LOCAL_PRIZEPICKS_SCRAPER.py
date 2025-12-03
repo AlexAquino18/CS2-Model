@@ -15,11 +15,9 @@ USAGE:
 python LOCAL_PRIZEPICKS_SCRAPER.py
 """
 
-import httpx
 import json
 import requests
 from datetime import datetime
-import uuid
 
 # Your deployed app URL
 DEPLOYED_APP_URL = "https://cs2-bet-buddy.preview.emergentagent.com"
