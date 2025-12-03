@@ -262,69 +262,122 @@ class CS2DataAggregator:
         return matches, all_projections
     
     def _find_matching_props(self, match_id: str, match: Dict, pp_props: List[Dict], ud_props: List[Dict]) -> List[Dict]:
-        """Find props that match this match - distribute players evenly across all matches"""
+        """Find props that match this match using team names from props"""
         projections = []
         
-        # Group ALL props by player
+        # Group props by player with their team info
         player_props = {}
         
         for prop in pp_props:
             player = prop['player_name']
             stat_type = prop['stat_type']
+            team = prop.get('team', '')  # Get team from PrizePicks data
+            game_id = prop.get('game_id', '')
             
             if player not in player_props:
-                player_props[player] = {}
+                player_props[player] = {
+                    'team': team,
+                    'game_id': game_id,
+                    'stats': {}
+                }
             
-            if stat_type not in player_props[player]:
-                player_props[player][stat_type] = {
+            if stat_type not in player_props[player]['stats']:
+                player_props[player]['stats'][stat_type] = {
                     'prizepicks': None,
                     'underdog': None
                 }
             
-            player_props[player][stat_type]['prizepicks'] = prop['line']
+            player_props[player]['stats'][stat_type]['prizepicks'] = prop['line']
         
         # Add underdog props
         for prop in ud_props:
             player = prop['player_name']
             stat_type = prop['stat_type']
+            team = prop.get('team', '')
             
             if player not in player_props:
-                player_props[player] = {}
+                player_props[player] = {
+                    'team': team,
+                    'game_id': '',
+                    'stats': {}
+                }
             
-            if stat_type not in player_props[player]:
-                player_props[player][stat_type] = {
+            if stat_type not in player_props[player]['stats']:
+                player_props[player]['stats'][stat_type] = {
                     'prizepicks': None,
                     'underdog': None
                 }
             
-            player_props[player][stat_type]['underdog'] = prop['line']
+            player_props[player]['stats'][stat_type]['underdog'] = prop['line']
         
-        # Store all players globally so we can distribute them
-        if not hasattr(self, '_all_players'):
-            self._all_players = list(player_props.keys())
-            self._match_counter = 0
+        # Try to match players to this specific match based on team names
+        # PandaScore and PrizePicks might use different team names, so we need fuzzy matching
+        team1_name = match['team1']
+        team2_name = match['team2']
         
-        # Calculate how many players per match
-        total_players = len(self._all_players)
-        players_per_match = max(10, total_players // 10) if total_players > 0 else 10  # At least 10 players per match
+        # Create variations for matching (handle abbreviations and spaces)
+        def normalize_team_name(name):
+            """Normalize team name for matching"""
+            return name.lower().replace(' ', '').replace('-', '').replace('_', '')
         
-        # Get players for THIS specific match
-        start_idx = self._match_counter * players_per_match
-        end_idx = start_idx + players_per_match
-        match_players = self._all_players[start_idx:end_idx]
+        team1_norm = normalize_team_name(team1_name)
+        team2_norm = normalize_team_name(team2_name)
         
-        self._match_counter += 1
+        # Try to find players that match this match's teams
+        matched_players = []
+        for player, player_data in player_props.items():
+            prop_team = player_data.get('team', '')
+            if not prop_team:
+                continue
+            
+            prop_team_norm = normalize_team_name(prop_team)
+            
+            # Check if player's team matches either team in this match
+            # Allow partial matches (e.g., "FaZe" matches "FaZe Clan")
+            if (prop_team_norm in team1_norm or team1_norm in prop_team_norm or
+                prop_team_norm in team2_norm or team2_norm in prop_team_norm):
+                matched_players.append(player)
         
-        # Create projections ONLY for players in this match
-        for player in match_players:
+        # If we found matching players, use them. Otherwise fall back to distributing all players
+        if matched_players:
+            logger.info(f"Matched {len(matched_players)} players to match {team1_name} vs {team2_name}")
+        else:
+            # Fallback: distribute all players across matches
+            if not hasattr(self, '_all_players'):
+                self._all_players = list(player_props.keys())
+                self._match_counter = 0
+            
+            total_players = len(self._all_players)
+            players_per_match = max(10, total_players // 10) if total_players > 0 else 10
+            
+            start_idx = self._match_counter * players_per_match
+            end_idx = start_idx + players_per_match
+            matched_players = self._all_players[start_idx:end_idx]
+            
+            self._match_counter += 1
+            logger.info(f"No team match found, distributing {len(matched_players)} players to match {team1_name} vs {team2_name}")
+        
+        # Create projections for matched players
+        for player in matched_players:
             if player not in player_props:
                 continue
-                
-            stats = player_props[player]
             
-            # Determine which team (distribute evenly)
-            player_index = match_players.index(player)
-            team = match['team1'] if player_index < len(match_players) / 2 else match['team2']
+            player_data = player_props[player]
+            prop_team = player_data.get('team', '')
+            stats = player_data.get('stats', {})
+            
+            # Determine which match team this player belongs to
+            # Use the actual team from PrizePicks if available
+            prop_team_norm = normalize_team_name(prop_team)
+            
+            if prop_team_norm in team1_norm or team1_norm in prop_team_norm:
+                team = team1_name
+            elif prop_team_norm in team2_norm or team2_norm in prop_team_norm:
+                team = team2_name
+            else:
+                # Fallback: distribute evenly if we can't match the team
+                player_index = matched_players.index(player)
+                team = team1_name if player_index < len(matched_players) / 2 else team2_name
             
             for stat_type, lines in stats.items():
                 pp_line = lines['prizepicks']
