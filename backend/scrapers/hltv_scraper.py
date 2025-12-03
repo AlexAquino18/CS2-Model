@@ -7,15 +7,15 @@ import re
 logger = logging.getLogger(__name__)
 
 class HLTVScraper:
-    """Scraper for CS2 match data using RapidAPI csgo-matches-and-tournaments"""
+    """Scraper for CS2 match data using PandaScore API"""
     
     def __init__(self):
-        # Using RapidAPI CS:GO Matches and Tournaments API
-        self.api_base = "https://csgo-matches-and-tournaments.p.rapidapi.com"
+        # Using PandaScore API for real-time CS2 matches
+        self.api_base = "https://api.pandascore.co"
+        self.api_token = "paR1oQjXNqVecsLSmUGx-n8O1Vpdj5HEZgmF9ZKFD2vYiUzHDso"
         self.headers = {
-            'Content-Type': 'application/json',
-            'x-rapidapi-host': 'csgo-matches-and-tournaments.p.rapidapi.com',
-            'x-rapidapi-key': '8c05f30b5dmsh937ab1dcaab7bcfp188d5djsn15ef45e13d38'
+            'Accept': 'application/json',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
     
     def fetch_upcoming_matches(self) -> List[Dict]:
