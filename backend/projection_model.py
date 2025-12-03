@@ -12,12 +12,15 @@ logger = logging.getLogger(__name__)
 class CS2ProjectionModel:
     """Statistical model for projecting CS2 player performance"""
     
-    def __init__(self):
+    def __init__(self, stats_fetcher=None):
         # Model parameters (tunable)
         self.baseline_variance = 0.10  # 10% variance from DFS baseline
         self.confidence_base = 75.0
         self.value_threshold_kills = 3.0
         self.value_threshold_headshots = 2.0
+        
+        # Stats fetcher for real data (optional)
+        self.stats_fetcher = stats_fetcher
         
         # Team strength adjustments (mock data - can be replaced with real stats)
         self.team_ratings = self._initialize_team_ratings()
