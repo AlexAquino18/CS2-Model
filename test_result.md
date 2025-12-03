@@ -224,3 +224,29 @@ curl http://localhost:8001/api/matches | grep -A 5 "ARCRED"
 **Action Taken:** Added error handling and logging. Frontend shows proper status.
 **Resolution:** Not fixable without Underdog API access or official API key
 
+
+## Update - 2025-12-03 01:41
+
+### Underdog Fantasy Team Extraction Enhancement
+
+**Change:** Updated Underdog scraper to extract team information from API response
+
+**Implementation:**
+- Modified `_parse_underdog_response()` in `/app/backend/scrapers/firecrawl_scraper.py`
+- Now extracts team info from:
+  1. `appearances.team_id` → `teams` lookup
+  2. Prefers `abbreviation` over full `name` for consistency with PrizePicks
+  3. Fallback to player's `team` field if team_id not available
+
+**Testing:**
+- Tested with mock Underdog API data structure
+- Verified props include team names: "s1mple (Navi)", "ZywOo (Vitality)"
+- When Underdog API becomes available, team assignment will work correctly
+
+**Status:** ✅ Ready for when Underdog API is available
+- Current: API still blocked with 422 error
+- When available: Will correctly assign players to teams like PrizePicks does
+
+**Files Modified:**
+- `/app/backend/scrapers/firecrawl_scraper.py` - Enhanced `_parse_underdog_response()` method
+
