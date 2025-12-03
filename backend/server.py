@@ -336,6 +336,11 @@ async def get_scraping_status():
         "note": "PrizePicks and HLTV have anti-scraping protection. Real data requires API keys or manual input."
     }
 
+@api_router.get("/model-info")
+async def get_model_info():
+    """Get projection model information and configuration"""
+    return aggregator.projection_model.get_model_info()
+
 # Include the router in the main app
 app.include_router(api_router)
 
