@@ -237,17 +237,21 @@ class FirecrawlUnderdogScraper:
             return []
     
     def _parse_underdog_response(self, data: Dict) -> List[Dict]:
-        """Parse Underdog API response"""
+        """Parse Underdog API response with team extraction"""
         props = []
         
         try:
             players_data = data.get('players', [])
             over_under_lines = data.get('over_under_lines', [])
             appearances = data.get('appearances', [])
+            games = data.get('games', [])
+            teams = data.get('teams', [])
             
             # Create lookups
             players_dict = {p['id']: p for p in players_data}
             appearances_dict = {a['id']: a for a in appearances}
+            games_dict = {g['id']: g for g in games}
+            teams_dict = {t['id']: t for t in teams}
             
             for line in over_under_lines:
                 try:
@@ -272,21 +276,38 @@ class FirecrawlUnderdogScraper:
                         if not stat_value:
                             continue
                         
-                        # Get player from appearance
+                        # Get player and team info from appearance
                         appearance = appearances_dict.get(appearance_id, {})
                         player_id = appearance.get('player_id')
+                        team_id = appearance.get('team_id')
+                        game_id = appearance.get('game_id')
+                        
+                        # Get player data
                         player = players_dict.get(player_id, {})
                         player_name = player.get('display_name', 'Unknown')
+                        
+                        # Get team name from team_id
+                        team_name = ''
+                        if team_id:
+                            team = teams_dict.get(team_id, {})
+                            team_name = team.get('name', '') or team.get('abbreviation', '') or team.get('nickname', '')
+                        
+                        # Fallback: try to get team from player data
+                        if not team_name:
+                            team_name = player.get('team_name', '') or player.get('team', '')
                         
                         if player_name != 'Unknown':
                             props.append({
                                 'player_name': player_name,
+                                'team': team_name,  # Add team information
                                 'stat_type': self._normalize_stat_type(stat_type),
                                 'line': float(stat_value),
-                                'platform': 'underdog'
+                                'platform': 'underdog',
+                                'game_id': game_id
                             })
                     
-                except Exception:
+                except Exception as e:
+                    # Log but continue processing other lines
                     continue
             
             logger.info(f"Parsed {len(props)} props from Underdog")
