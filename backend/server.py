@@ -318,9 +318,17 @@ async def refresh_data():
 async def get_stats():
     """Get overall statistics"""
     projections = data_cache.get("projections", [])
+    matches = data_cache.get("matches", [])
     value_opportunities = [p for p in projections if p.value_opportunity]
     
+    # Count matches with and without props
+    matches_with_props = len([m for m in matches if m.get('has_props', True)])
+    matches_without_props = len(matches) - matches_with_props
+    
     return {
+        "total_matches": len(matches),
+        "matches_with_props": matches_with_props,
+        "matches_without_props": matches_without_props,
         "total_projections": len(projections),
         "value_opportunities": len(value_opportunities),
         "avg_confidence": round(sum([p.confidence for p in projections]) / len(projections), 1) if projections else 0,
