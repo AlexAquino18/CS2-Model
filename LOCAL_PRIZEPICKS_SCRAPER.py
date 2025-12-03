@@ -81,10 +81,10 @@ def fetch_prizepicks_api_method():
                         print(f"✅ Found {len(cs2_props)} CS2 props from all leagues")
                         return cs2_props
         else:
-                print(f"❌ Leagues request failed: {leagues_response.status_code}")
-                if leagues_response.status_code == 403:
-                    print("   Cloudflare is blocking the request (403 Forbidden)")
-                    print("   This might still happen if you're on a VPN or proxy")
+            print(f"❌ Leagues request failed: {leagues_response.status_code}")
+            if leagues_response.status_code == 403:
+                print("   Cloudflare is blocking the request (403 Forbidden)")
+                print("   This might still happen if you're on a VPN or proxy")
                     
     except Exception as e:
         print(f"❌ Error: {e}")
