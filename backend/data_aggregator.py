@@ -77,11 +77,16 @@ class CS2DataAggregator:
         
         logger.info(f"Fetched: {len(hltv_matches)} HLTV matches, {len(prizepicks_props)} PrizePicks props, {len(underdog_props)} Underdog props")
         
-        # If we have HLTV matches, use them even without PrizePicks props
+        # If we have HLTV matches, use them
         if hltv_matches:
-            logger.info("Using HLTV matches - generating sample props since PrizePicks unavailable")
-            matches, projections = self._combine_data_with_mock_props(hltv_matches, prizepicks_props, underdog_props)
-            return matches, projections
+            if prizepicks_props or underdog_props:
+                logger.info(f"✅ Using HLTV matches with REAL DFS props!")
+                matches, projections = self._combine_data(hltv_matches, prizepicks_props, underdog_props)
+                return matches, projections
+            else:
+                logger.info("Using HLTV matches - generating sample props since no DFS data available")
+                matches, projections = self._combine_data_with_mock_props(hltv_matches, prizepicks_props, underdog_props)
+                return matches, projections
         
         # If no real data available at all
         if not hltv_matches and not prizepicks_props:
