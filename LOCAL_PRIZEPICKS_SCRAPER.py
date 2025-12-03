@@ -20,7 +20,7 @@ import requests
 from datetime import datetime
 
 # Your deployed app URL
-DEPLOYED_APP_URL = "https://cs2-bet-buddy.preview.emergentagent.com"
+DEPLOYED_APP_URL = "https://gamestats-compare.preview.emergentagent.com"
 
 def fetch_prizepicks_api_method():
     """
