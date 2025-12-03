@@ -74,9 +74,17 @@ class CS2ProjectionModel:
     def calculate_player_form(self, player_name: str) -> float:
         """
         Calculate player form multiplier based on recent performance
-        Currently returns mock data - can be replaced with real recent match stats
+        Uses real data if stats_fetcher is enabled, otherwise mock data
         Returns: multiplier between 0.85 and 1.15
         """
+        # Try to get real data first
+        if self.stats_fetcher:
+            real_form = self.stats_fetcher.fetch_player_recent_form(player_name)
+            if real_form is not None:
+                logger.info(f"📊 Using REAL form for {player_name}: {real_form}x")
+                return real_form
+        
+        # Fallback to mock data
         # Check cache
         if player_name in self.player_form:
             return self.player_form[player_name]
