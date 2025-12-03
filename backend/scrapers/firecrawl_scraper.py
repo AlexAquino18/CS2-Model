@@ -286,11 +286,11 @@ class FirecrawlUnderdogScraper:
                         player = players_dict.get(player_id, {})
                         player_name = player.get('display_name', 'Unknown')
                         
-                        # Get team name from team_id
+                        # Get team name from team_id (prefer abbreviation for consistency)
                         team_name = ''
                         if team_id:
                             team = teams_dict.get(team_id, {})
-                            team_name = team.get('name', '') or team.get('abbreviation', '') or team.get('nickname', '')
+                            team_name = team.get('abbreviation', '') or team.get('name', '') or team.get('nickname', '')
                         
                         # Fallback: try to get team from player data
                         if not team_name:
