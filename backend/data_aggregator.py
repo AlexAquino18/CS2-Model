@@ -262,10 +262,10 @@ class CS2DataAggregator:
         return matches, all_projections
     
     def _find_matching_props(self, match_id: str, match: Dict, pp_props: List[Dict], ud_props: List[Dict]) -> List[Dict]:
-        """Find props that match this match"""
+        """Find props that match this match - distribute players evenly across all matches"""
         projections = []
         
-        # Group props by player
+        # Group ALL props by player
         player_props = {}
         
         for prop in pp_props:
@@ -299,8 +299,33 @@ class CS2DataAggregator:
             
             player_props[player][stat_type]['underdog'] = prop['line']
         
-        # Create projections
-        for player, stats in player_props.items():
+        # Store all players globally so we can distribute them
+        if not hasattr(self, '_all_players'):
+            self._all_players = list(player_props.keys())
+            self._match_counter = 0
+        
+        # Calculate how many players per match
+        total_players = len(self._all_players)
+        players_per_match = max(10, total_players // 10) if total_players > 0 else 10  # At least 10 players per match
+        
+        # Get players for THIS specific match
+        start_idx = self._match_counter * players_per_match
+        end_idx = start_idx + players_per_match
+        match_players = self._all_players[start_idx:end_idx]
+        
+        self._match_counter += 1
+        
+        # Create projections ONLY for players in this match
+        for player in match_players:
+            if player not in player_props:
+                continue
+                
+            stats = player_props[player]
+            
+            # Determine which team (distribute evenly)
+            player_index = match_players.index(player)
+            team = match['team1'] if player_index < len(match_players) / 2 else match['team2']
+            
             for stat_type, lines in stats.items():
                 pp_line = lines['prizepicks']
                 ud_line = lines['underdog']
@@ -325,9 +350,6 @@ class CS2DataAggregator:
                             'line': ud_line,
                             'maps': 'Map1+Map2'
                         })
-                    
-                    # Determine which team (simplified)
-                    team = match['team1']  # Would need better logic
                     
                     projection = {
                         'match_id': match_id,
