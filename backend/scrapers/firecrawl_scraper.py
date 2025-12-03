@@ -71,8 +71,8 @@ class FirecrawlPrizePicksScraper:
             
             url = "https://app.prizepicks.com/"
             
-            result = self.app.scrape_url(
-                url=url,
+            result = self.app.scrape(
+                url,
                 params={
                     'formats': ['markdown', 'html'],
                     'onlyMainContent': True
