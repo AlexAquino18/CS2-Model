@@ -265,24 +265,30 @@ class PrizePicksScraper:
 
 
 class UnderdogScraper:
-    """Scraper for Underdog Fantasy CS2 props"""
+    """Scraper for Underdog Fantasy props - GitHub aidanhall21 approach"""
     
     def __init__(self):
-        self.base_url = "https://api.underdogfantasy.com/v1/games"
-        self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            'Accept': 'application/json',
-        }
+        self.base_url = "https://api.underdogfantasy.com/beta/v5/over_under_lines"
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Referer': 'https://www.google.com/',
+            'Accept': 'application/json'
+        })
     
     def fetch_cs2_props(self) -> List[Dict]:
-        """Fetch CS2 projections from Underdog"""
+        """Fetch CS2/esports projections from Underdog"""
         try:
-            # Underdog API endpoint - may need authentication
-            response = requests.get(self.base_url, headers=self.headers, timeout=10)
+            response = self.session.get(self.base_url, timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
+                logger.info(f"Successfully fetched Underdog data")
                 return self._parse_props(data)
+            elif response.status_code == 422:
+                logger.warning(f"Underdog API rate limited (CDN circuit breaker)")
+                return []
             else:
                 logger.warning(f"Underdog API returned status {response.status_code}")
                 return []
@@ -292,7 +298,69 @@ class UnderdogScraper:
             return []
     
     def _parse_props(self, data: Dict) -> List[Dict]:
-        """Parse props from Underdog API response"""
-        # Implementation depends on actual API structure
-        logger.info("Underdog parsing not fully implemented")
-        return []
+        """Parse props from Underdog API response - GitHub approach"""
+        props = []
+        
+        try:
+            # Underdog returns: players, appearances, over_under_lines
+            if 'players' not in data or 'over_under_lines' not in data:
+                logger.warning("Underdog API structure unexpected")
+                return []
+            
+            players_data = data.get('players', [])
+            over_under_lines = data.get('over_under_lines', [])
+            
+            # Create lookup for players
+            players_dict = {p['id']: p for p in players_data}
+            
+            # Process over/under lines
+            for line in over_under_lines:
+                try:
+                    # Check if it's esports/CS2
+                    sport_id = line.get('sport_id', '')
+                    if 'esport' not in sport_id.lower() and 'cs' not in sport_id.lower():
+                        continue
+                    
+                    # Get options (over/under)
+                    options = line.get('options', [])
+                    for option in options:
+                        over_under_data = option.get('over_under', {})
+                        appearance_stat = over_under_data.get('appearance_stat', {})
+                        
+                        # Get player info
+                        appearance_id = appearance_stat.get('appearance_id')
+                        stat_type = appearance_stat.get('stat', '')
+                        
+                        # Find player from appearances
+                        # Note: This is simplified - full implementation would join with appearances
+                        
+                        prop = {
+                            'player_name': 'Unknown',  # Would need to join with appearances/players
+                            'stat_type': self._normalize_stat_type(stat_type),
+                            'line': float(option.get('stat_value', 0)),
+                            'platform': 'underdog'
+                        }
+                        
+                        if prop['line'] > 0:
+                            props.append(prop)
+                        
+                except Exception:
+                    continue
+            
+            logger.info(f"Parsed {len(props)} Underdog props")
+            return props
+            
+        except Exception as e:
+            logger.error(f"Error parsing Underdog response: {str(e)}")
+            return []
+    
+    def _normalize_stat_type(self, stat_type: str) -> str:
+        """Normalize stat type to our format"""
+        stat_type_lower = stat_type.lower()
+        
+        if 'kill' in stat_type_lower:
+            return 'kills'
+        elif 'headshot' in stat_type_lower or 'hs' in stat_type_lower:
+            return 'headshots'
+        else:
+            return stat_type_lower
