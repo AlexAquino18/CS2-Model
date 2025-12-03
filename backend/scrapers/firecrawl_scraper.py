@@ -19,42 +19,41 @@ class FirecrawlPrizePicksScraper:
     def scrape_prizepicks_api(self) -> List[Dict]:
         """Scrape PrizePicks API using Firecrawl"""
         try:
-            logger.info("Using Firecrawl to fetch PrizePicks data")
+            logger.info("🔥 Using Firecrawl to fetch PrizePicks data")
             
             # Try to scrape the API directly
             url = "https://api.prizepicks.com/projections?per_page=500&single_stat=true&game_mode=pickem"
             
-            # Use correct method name: scrape (not scrape_url)
-            result = self.app.scrape(url, params={'formats': ['json']})
+            # Use correct method: scrape (returns Document object)
+            result = self.app.scrape(url)
             
             if result:
-                logger.info(f"✅ Firecrawl returned data: {type(result)}")
+                logger.info(f"✅ Firecrawl returned Document")
                 
-                # Check different possible response structures
-                if 'markdown' in result:
-                    # Try to parse markdown as JSON
+                # Firecrawl returns a Document object with markdown attribute containing JSON
+                if hasattr(result, 'markdown') and result.markdown:
                     try:
-                        import json
-                        data = json.loads(result['markdown'])
+                        # Remove code fence if present
+                        markdown = result.markdown.strip()
+                        if markdown.startswith('```json'):
+                            markdown = markdown[7:]  # Remove ```json
+                        if markdown.startswith('```'):
+                            markdown = markdown[3:]  # Remove ```
+                        if markdown.endswith('```'):
+                            markdown = markdown[:-3]  # Remove closing ```
+                        
+                        markdown = markdown.strip()
+                        
+                        # Parse JSON
+                        data = json.loads(markdown)
+                        logger.info(f"✅ Parsed JSON from Firecrawl markdown")
+                        
                         return self._parse_api_response(data)
-                    except:
-                        pass
+                    except Exception as e:
+                        logger.error(f"Error parsing markdown as JSON: {e}")
+                        logger.debug(f"Markdown preview: {result.markdown[:500]}")
                 
-                if 'html' in result:
-                    # Try to extract JSON from HTML
-                    try:
-                        import json
-                        data = json.loads(result['html'])
-                        return self._parse_api_response(data)
-                    except:
-                        pass
-                
-                if 'data' in result:
-                    return self._parse_api_response(result['data'])
-                
-                # Log what we got
-                logger.info(f"Firecrawl result keys: {result.keys() if isinstance(result, dict) else 'not a dict'}")
-                logger.warning("Could not find parseable data in Firecrawl response")
+                logger.warning("Could not extract parseable data from Firecrawl response")
             
             return []
             
