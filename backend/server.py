@@ -322,8 +322,12 @@ async def get_stats():
     value_opportunities = [p for p in projections if p.value_opportunity]
     
     # Count matches with and without props
-    matches_with_props = len([m for m in matches if m.get('has_props', True)])
-    matches_without_props = len(matches) - matches_with_props
+    try:
+        matches_with_props = len([m for m in matches if getattr(m, 'has_props', True) if hasattr(m, 'has_props') else True])
+        matches_without_props = len(matches) - matches_with_props
+    except:
+        matches_with_props = len(matches)
+        matches_without_props = 0
     
     return {
         "total_matches": len(matches),
