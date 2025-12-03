@@ -372,6 +372,32 @@ async def get_significant_line_movements():
         "count": len(significant)
     }
 
+@api_router.post("/admin/update-underdog")
+async def update_underdog_lines(request: Request):
+    """Update Underdog lines from admin panel"""
+    try:
+        body = await request.json()
+        lines_text = body.get('lines_text', '')
+        
+        if not lines_text:
+            return {"error": "No lines provided"}, 400
+        
+        # Parse the lines
+        from underdog_manual_data import parse_and_save_lines
+        count = parse_and_save_lines(lines_text)
+        
+        # Trigger data refresh to use new lines
+        await refresh_data()
+        
+        return {
+            "success": True,
+            "count": count,
+            "message": f"Successfully updated {count} Underdog lines"
+        }
+    except Exception as e:
+        logger.error(f"Error updating Underdog lines: {e}")
+        return {"error": str(e)}, 500
+
 # Include the router in the main app
 app.include_router(api_router)
 
