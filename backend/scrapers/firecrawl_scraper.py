@@ -105,10 +105,17 @@ class FirecrawlPrizePicksScraper:
                 # Create player lookup
                 players = {item['id']: item for item in included if item.get('type') == 'new_player'}
                 
+                # Create league lookup
+                leagues = {item['id']: item['attributes']['name'] for item in included if item.get('type') == 'league'}
+                
                 for projection in projections:
                     try:
                         attrs = projection.get('attributes', {})
                         relationships = projection.get('relationships', {})
+                        
+                        # Get league info
+                        league_id = relationships.get('league', {}).get('data', {}).get('id')
+                        league_name = leagues.get(league_id, '')
                         
                         # Get player name
                         player_id = relationships.get('new_player', {}).get('data', {}).get('id')
@@ -124,7 +131,9 @@ class FirecrawlPrizePicksScraper:
                                 'player_name': player_name,
                                 'stat_type': self._normalize_stat_type(stat_type),
                                 'line': float(line),
-                                'platform': 'prizepicks'
+                                'platform': 'prizepicks',
+                                'league_id': league_id,
+                                'league_name': league_name
                             })
                     except:
                         continue
