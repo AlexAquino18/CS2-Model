@@ -341,6 +341,25 @@ async def get_model_info():
     """Get projection model information and configuration"""
     return aggregator.projection_model.get_model_info()
 
+@api_router.get("/line-movements")
+async def get_line_movements():
+    """Get all detected line movements"""
+    movements = aggregator.line_tracker.get_all_movements()
+    return {
+        "movements": list(movements.values()),
+        "total_movements": len(movements),
+        "tracker_stats": aggregator.line_tracker.get_tracker_stats()
+    }
+
+@api_router.get("/line-movements/significant")
+async def get_significant_line_movements():
+    """Get only significant line movements"""
+    significant = aggregator.line_tracker.get_significant_movements()
+    return {
+        "significant_movements": significant,
+        "count": len(significant)
+    }
+
 # Include the router in the main app
 app.include_router(api_router)
 
