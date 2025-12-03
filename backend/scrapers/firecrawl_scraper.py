@@ -214,6 +214,14 @@ class FirecrawlUnderdogScraper:
                     markdown = markdown.strip()
                     data = json.loads(markdown)
                     
+                    # Check for error response
+                    if 'status' in data and data.get('status') in [422, 403, 429]:
+                        error_msg = data.get('detail', 'API blocked')
+                        error_code = data.get('code', 'unknown')
+                        logger.warning(f"❌ Underdog API blocked: {error_msg} (code: {error_code})")
+                        logger.info("Note: Underdog Fantasy may not currently offer CS2 props or is blocking API access")
+                        return []
+                    
                     logger.info(f"✅ Parsed JSON from Firecrawl for Underdog")
                     return self._parse_underdog_response(data)
                     
