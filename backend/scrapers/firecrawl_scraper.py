@@ -24,13 +24,7 @@ class FirecrawlPrizePicksScraper:
             # Try to scrape the API directly
             url = "https://api.prizepicks.com/projections?per_page=500&single_stat=true&game_mode=pickem"
             
-            result = self.app.scrape_url(
-                url=url,
-                params={
-                    'formats': ['json'],
-                    'onlyMainContent': False
-                }
-            )
+            result = self.app.scrape_url(url)
             
             if result and 'data' in result:
                 logger.info("✅ Successfully scraped PrizePicks API with Firecrawl")
