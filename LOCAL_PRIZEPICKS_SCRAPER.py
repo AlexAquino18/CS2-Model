@@ -26,26 +26,21 @@ DEPLOYED_APP_URL = "https://cs2-bet-buddy.preview.emergentagent.com"
 
 def fetch_prizepicks_api_method():
     """
-    Method 1: Using PrizePicks API directly (from StackOverflow solution)
+    Method: Using PrizePicks API directly (GitHub dannyphantomSS/prizepickAPI approach)
     This should work from your local machine
     """
     print("\\n🔍 Attempting to fetch from PrizePicks API...")
     
-    headers = {
-        'sec-ch-ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
-        'sec-ch-ua-mobile': '?0',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Referer': 'https://app.prizepicks.com/',
-        'X-Device-ID': str(uuid.uuid4()),
-        'sec-ch-ua-platform': '"macOS"'
-    }
+    # Simpler headers that work (from GitHub repo)
+    session = requests.Session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': 'application/json'
+    })
     
     try:
         # First, get available leagues
-        with httpx.Client(http2=True, timeout=15) as client:
-            leagues_response = client.get('https://api.prizepicks.com/leagues', headers=headers)
+        leagues_response = session.get('https://api.prizepicks.com/leagues', timeout=10)
             
             if leagues_response.status_code == 200:
                 leagues_data = leagues_response.json()
