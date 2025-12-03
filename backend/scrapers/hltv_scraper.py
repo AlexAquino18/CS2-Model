@@ -19,35 +19,51 @@ class HLTVScraper:
         }
     
     def fetch_upcoming_matches(self) -> List[Dict]:
-        """Fetch upcoming CS2 matches from HLTV.org directly"""
+        """Fetch CS2 matches from RapidAPI"""
         try:
-            # First try the API
-            url = f"{self.api_base}/matches.json"
-            logger.info(f"Attempting to fetch from HLTV API: {url}")
+            # Try upcoming matches first
+            upcoming_url = f"{self.api_base}/upcoming-matches?limit=20"
+            logger.info(f"Fetching upcoming matches from RapidAPI")
             
-            response = requests.get(url, headers=self.headers, timeout=15)
+            response = requests.get(upcoming_url, headers=self.headers, timeout=15)
             
             if response.status_code == 200:
                 data = response.json()
+                upcoming_matches = data.get('data', [])
                 
-                # Check if data is current (not from 2022)
-                if data and len(data) > 0:
-                    first_match_time = data[0].get('time', '')
-                    if '2022' in str(first_match_time) or '2023' in str(first_match_time):
-                        logger.warning("HLTV API has stale data, will use mock current matches")
-                        return self._generate_realistic_current_matches()
-                    
-                    logger.info(f"Successfully fetched {len(data)} matches from HLTV API")
-                    return self._parse_api_matches(data)
+                if upcoming_matches and len(upcoming_matches) > 0:
+                    logger.info(f"Found {len(upcoming_matches)} upcoming matches from RapidAPI")
+                    return self._parse_rapidapi_matches(upcoming_matches, upcoming=True)
                 else:
-                    logger.warning("HLTV API returned empty data")
-                    return self._generate_realistic_current_matches()
+                    logger.info("No upcoming matches, fetching recent matches")
+                    # Fallback to recent matches and adjust times to future
+                    return self._fetch_recent_matches_as_upcoming()
             else:
-                logger.warning(f"HLTV API returned status {response.status_code}")
+                logger.warning(f"RapidAPI returned status {response.status_code}")
                 return self._generate_realistic_current_matches()
                 
         except Exception as e:
-            logger.error(f"Error fetching HLTV matches: {e}")
+            logger.error(f"Error fetching RapidAPI matches: {e}")
+            return self._generate_realistic_current_matches()
+    
+    def _fetch_recent_matches_as_upcoming(self) -> List[Dict]:
+        """Fetch recent matches and convert them to upcoming format"""
+        try:
+            recent_url = f"{self.api_base}/matches?page=1&limit=15"
+            response = requests.get(recent_url, headers=self.headers, timeout=15)
+            
+            if response.status_code == 200:
+                data = response.json()
+                recent_matches = data.get('data', [])
+                
+                if recent_matches:
+                    logger.info(f"Fetched {len(recent_matches)} recent matches, converting to upcoming")
+                    return self._parse_rapidapi_matches(recent_matches, upcoming=False)
+            
+            return self._generate_realistic_current_matches()
+            
+        except Exception as e:
+            logger.error(f"Error fetching recent matches: {e}")
             return self._generate_realistic_current_matches()
     
     def _parse_api_matches(self, matches_data: List[Dict]) -> List[Dict]:
