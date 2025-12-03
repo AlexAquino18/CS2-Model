@@ -85,7 +85,17 @@ class PrizePicksScraper:
         league_id = str(prop.get('league_id', ''))
         league_name = prop.get('league_name', '').upper()
         
-        return league_id == '265' or league_name == 'CS2'
+        result = league_id == '265' or league_name == 'CS2'
+        
+        # Debug first few calls
+        if not hasattr(self, '_debug_count'):
+            self._debug_count = 0
+        
+        if self._debug_count < 3:
+            logger.info(f"Filter check #{self._debug_count}: league_id='{league_id}', league_name='{league_name}', result={result}")
+            self._debug_count += 1
+        
+        return result
     
     def _get_all_leagues(self) -> Dict[str, int]:
         """Fetch all available leagues from PrizePicks - GitHub approach"""
