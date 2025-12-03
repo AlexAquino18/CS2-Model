@@ -19,10 +19,10 @@ class FirecrawlPrizePicksScraper:
     def scrape_prizepicks_api(self) -> List[Dict]:
         """Scrape PrizePicks API using Firecrawl"""
         try:
-            logger.info("🔥 Using Firecrawl to fetch PrizePicks data")
+            logger.info("🔥 Using Firecrawl to fetch CS2 props from PrizePicks")
             
-            # Try to scrape the API directly
-            url = "https://api.prizepicks.com/projections?per_page=500&single_stat=true&game_mode=pickem"
+            # Fetch CS2-specific props (league_id=265)
+            url = "https://api.prizepicks.com/projections?league_id=265&per_page=250&single_stat=true&game_mode=pickem"
             
             # Use correct method: scrape (returns Document object)
             result = self.app.scrape(url)
