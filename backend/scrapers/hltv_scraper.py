@@ -19,31 +19,28 @@ class HLTVScraper:
         }
     
     def fetch_upcoming_matches(self) -> List[Dict]:
-        """Fetch CS2 matches from RapidAPI"""
+        """Fetch REAL CS2 matches from PandaScore API"""
         try:
-            # Try upcoming matches first
-            upcoming_url = f"{self.api_base}/upcoming-matches?limit=20"
-            logger.info(f"Fetching upcoming matches from RapidAPI")
+            url = f"{self.api_base}/csgo/matches/upcoming?token={self.api_token}"
+            logger.info(f"Fetching REAL upcoming matches from PandaScore API")
             
-            response = requests.get(upcoming_url, headers=self.headers, timeout=15)
+            response = requests.get(url, headers=self.headers, timeout=15)
             
             if response.status_code == 200:
                 data = response.json()
-                upcoming_matches = data.get('data', [])
                 
-                if upcoming_matches and len(upcoming_matches) > 0:
-                    logger.info(f"Found {len(upcoming_matches)} upcoming matches from RapidAPI")
-                    return self._parse_rapidapi_matches(upcoming_matches, upcoming=True)
+                if data and len(data) > 0:
+                    logger.info(f"✅ Found {len(data)} REAL upcoming matches from PandaScore")
+                    return self._parse_pandascore_matches(data)
                 else:
-                    logger.info("No upcoming matches, fetching recent matches")
-                    # Fallback to recent matches and adjust times to future
-                    return self._fetch_recent_matches_as_upcoming()
+                    logger.warning("No upcoming matches from PandaScore")
+                    return self._generate_realistic_current_matches()
             else:
-                logger.warning(f"RapidAPI returned status {response.status_code}")
+                logger.warning(f"PandaScore API returned status {response.status_code}")
                 return self._generate_realistic_current_matches()
                 
         except Exception as e:
-            logger.error(f"Error fetching RapidAPI matches: {e}")
+            logger.error(f"Error fetching PandaScore matches: {e}")
             return self._generate_realistic_current_matches()
     
     def _fetch_recent_matches_as_upcoming(self) -> List[Dict]:
