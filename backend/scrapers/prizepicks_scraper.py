@@ -36,6 +36,11 @@ class PrizePicksScraper:
                     sample_leagues = set([p.get('league_name', 'Unknown') for p in props[:50]])
                     logger.info(f"Sample leagues in props: {sorted(sample_leagues)}")
                     
+                    # Debug first prop
+                    if props:
+                        first = props[0]
+                        logger.info(f"First prop debug - league_id: '{first.get('league_id')}' (type: {type(first.get('league_id'))}), league_name: '{first.get('league_name')}'")
+                    
                     # Filter for CS2 only
                     cs2_props = [p for p in props if self._is_cs2_prop(p)]
                     logger.info(f"After filtering, found {len(cs2_props)} CS2 props")
