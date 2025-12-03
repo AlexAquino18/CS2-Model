@@ -43,44 +43,44 @@ def fetch_prizepicks_api_method():
         leagues_response = session.get('https://api.prizepicks.com/leagues', timeout=10)
         
         if leagues_response.status_code == 200:
-                leagues_data = leagues_response.json()
-                print(f"✅ Successfully fetched leagues list")
+            leagues_data = leagues_response.json()
+            print(f"✅ Successfully fetched leagues list")
+            
+            # Look for CS2/CSGO
+            cs2_league_id = None
+            for league in leagues_data.get('data', []):
+                name = league.get('attributes', {}).get('name', '').lower()
+                league_id = league.get('id')
+                print(f"   - {league.get('attributes', {}).get('name')}: {league_id}")
                 
-                # Look for CS2/CSGO
-                cs2_league_id = None
-                for league in leagues_data.get('data', []):
-                    name = league.get('attributes', {}).get('name', '').lower()
-                    league_id = league.get('id')
-                    print(f"   - {league.get('attributes', {}).get('name')}: {league_id}")
-                    
-                    if any(term in name for term in ['cs2', 'cs:2', 'counter-strike', 'csgo']):
-                        cs2_league_id = league_id
-                        print(f"\\n🎯 Found CS2 league: {name} (ID: {league_id})")
+                if any(term in name for term in ['cs2', 'cs:2', 'counter-strike', 'csgo']):
+                    cs2_league_id = league_id
+                    print(f"\\n🎯 Found CS2 league: {name} (ID: {league_id})")
+            
+            # Fetch projections for CS2 if found
+            if cs2_league_id:
+                props_url = f"https://api.prizepicks.com/projections?league_id={cs2_league_id}&per_page=250&single_stat=true&game_mode=pickem"
+                props_response = session.get(props_url, timeout=10)
                 
-                # Fetch projections for CS2 if found
-                if cs2_league_id:
-                    props_url = f"https://api.prizepicks.com/projections?league_id={cs2_league_id}&per_page=250&single_stat=true&game_mode=pickem"
-                    props_response = session.get(props_url, timeout=10)
-                    
-                    if props_response.status_code == 200:
-                        props_data = props_response.json()
-                        print(f"✅ Successfully fetched CS2 props: {len(props_data.get('data', []))} projections")
-                        return parse_prizepicks_props(props_data)
-                    else:
-                        print(f"❌ Props request failed: {props_response.status_code}")
+                if props_response.status_code == 200:
+                    props_data = props_response.json()
+                    print(f"✅ Successfully fetched CS2 props: {len(props_data.get('data', []))} projections")
+                    return parse_prizepicks_props(props_data)
                 else:
-                    print("⚠️  CS2 league not found. Trying to fetch all leagues...")
-                    # Fetch all props and filter
-                    all_props_url = "https://api.prizepicks.com/projections?per_page=250&single_stat=true&game_mode=pickem"
-                    props_response = session.get(all_props_url, timeout=10)
-                    
-                    if props_response.status_code == 200:
-                        props_data = props_response.json()
-                        cs2_props = filter_cs2_props(props_data)
-                        if cs2_props:
-                            print(f"✅ Found {len(cs2_props)} CS2 props from all leagues")
-                            return cs2_props
+                    print(f"❌ Props request failed: {props_response.status_code}")
             else:
+                print("⚠️  CS2 league not found. Trying to fetch all leagues...")
+                # Fetch all props and filter
+                all_props_url = "https://api.prizepicks.com/projections?per_page=250&single_stat=true&game_mode=pickem"
+                props_response = session.get(all_props_url, timeout=10)
+                
+                if props_response.status_code == 200:
+                    props_data = props_response.json()
+                    cs2_props = filter_cs2_props(props_data)
+                    if cs2_props:
+                        print(f"✅ Found {len(cs2_props)} CS2 props from all leagues")
+                        return cs2_props
+        else:
                 print(f"❌ Leagues request failed: {leagues_response.status_code}")
                 if leagues_response.status_code == 403:
                     print("   Cloudflare is blocking the request (403 Forbidden)")
