@@ -110,6 +110,12 @@ const Dashboard = () => {
                 LINE MOVES
               </Button>
               <Button
+                onClick={() => window.location.href = '/admin'}
+                className="bg-secondary text-secondary-foreground font-black uppercase tracking-wider hover:bg-secondary/90 active:scale-95 transition-all rounded-sm"
+              >
+                ⚙️ ADMIN
+              </Button>
+              <Button
                 data-testid="refresh-button"
                 onClick={handleRefresh}
                 disabled={refreshing}
