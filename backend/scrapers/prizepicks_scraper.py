@@ -147,83 +147,60 @@ class PrizePicksScraper:
         return any(indicator in game_info or indicator in player_name for indicator in cs2_indicators)
     
     def _parse_props_response(self, data: Dict, sport: str) -> List[Dict]:
-        """Parse projections from API response - improved parsing"""
-        projections = []
+        """Parse props response - GitHub dannyphantomSS approach"""
+        props = []
         
         try:
-            if 'data' not in data:
-                logger.warning("No 'data' field in API response")
-                return []
+            projections = data.get('data', [])
+            included = data.get('included', [])
             
-            # Also parse included data for additional context
-            included_data = {}
-            if 'included' in data:
-                for item in data['included']:
-                    item_type = item.get('type')
-                    item_id = item.get('id')
-                    if item_type and item_id:
-                        if item_type not in included_data:
-                            included_data[item_type] = {}
-                        included_data[item_type][item_id] = item.get('attributes', {})
+            # Lookup tables for players and picks
+            players = {item['id']: item for item in included if item.get('type') == 'new_player'}
+            picks = {item['id']: item for item in included if item.get('type') == 'pick'}
             
-            for item in data['data']:
-                if item.get('type') == 'projection':
-                    attrs = item.get('attributes', {})
-                    relationships = item.get('relationships', {})
+            for projection in projections:
+                try:
+                    attrs = projection.get('attributes', {})
+                    relationships = projection.get('relationships', {})
                     
-                    # Extract player name - try multiple fields
-                    player_name = attrs.get('name', '')
-                    if not player_name:
-                        # Try to get from description
-                        desc = attrs.get('description', '')
-                        if desc:
-                            # Usually format is "Player Name - Stat Type"
-                            parts = desc.split(' - ')
-                            if len(parts) > 0:
-                                player_name = parts[0].strip()
+                    # Get player info from included data
+                    player_id = relationships.get('new_player', {}).get('data', {}).get('id')
+                    player_info = players.get(player_id, {}).get('attributes', {}) if player_id else {}
                     
-                    # Get stat type
-                    stat_type = attrs.get('stat_type', '')
+                    # Get player name
+                    player_name = player_info.get('display_name', 'Unknown')
                     
-                    # Get line score
+                    # Get stat type and line
+                    stat_type = attrs.get('stat_type', 'Unknown')
                     line_score = attrs.get('line_score')
-                    if line_score:
-                        try:
-                            line = float(line_score)
-                        except (ValueError, TypeError):
-                            continue
-                    else:
+                    
+                    if not line_score:
                         continue
                     
-                    # Get additional context
-                    game_info = attrs.get('description', '')
-                    start_time = attrs.get('start_time', '')
+                    try:
+                        line = float(line_score)
+                    except (ValueError, TypeError):
+                        continue
                     
-                    # Try to get league/game info from relationships
-                    league_id = relationships.get('league', {}).get('data', {}).get('id')
-                    new_player_id = relationships.get('new_player', {}).get('data', {}).get('id')
-                    
-                    # Build projection object
-                    projection = {
+                    # Build prop object
+                    prop = {
                         'player_name': player_name,
                         'stat_type': self._normalize_stat_type(stat_type),
                         'line': line,
-                        'game_info': game_info,
-                        'start_time': start_time,
-                        'league_id': league_id,
-                        'player_id': new_player_id
+                        'game_info': attrs.get('description', ''),
+                        'start_time': attrs.get('start_time', ''),
+                        'platform': 'prizepicks'
                     }
                     
-                    if player_name and line > 0:
-                        projections.append(projection)
+                    props.append(prop)
+                    
+                except Exception:
+                    continue  # Skip bad prop
             
-            logger.info(f"Parsed {len(projections)} PrizePicks projections")
-            return projections
+            return props
             
         except Exception as e:
-            logger.error(f"Error parsing projections: {e}")
-            import traceback
-            logger.error(traceback.format_exc())
+            logger.error(f"Error parsing {sport} response: {str(e)}")
             return []
     
     def _normalize_stat_type(self, stat_type: str) -> str:
