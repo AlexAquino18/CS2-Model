@@ -323,7 +323,7 @@ async def get_stats():
     
     # Count matches with and without props
     try:
-        matches_with_props = len([m for m in matches if getattr(m, 'has_props', True) if hasattr(m, 'has_props') else True])
+        matches_with_props = len([m for m in matches if (hasattr(m, 'has_props') and getattr(m, 'has_props', True)) or not hasattr(m, 'has_props')])
         matches_without_props = len(matches) - matches_with_props
     except:
         matches_with_props = len(matches)
