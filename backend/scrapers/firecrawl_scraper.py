@@ -161,3 +161,120 @@ class FirecrawlPrizePicksScraper:
             return 'headshots'
         else:
             return stat_type_lower
+
+
+class FirecrawlUnderdogScraper:
+    """Use Firecrawl to scrape Underdog Fantasy data"""
+    
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.app = FirecrawlApp(api_key=api_key)
+    
+    def scrape_underdog_api(self) -> List[Dict]:
+        """Scrape Underdog Fantasy API using Firecrawl"""
+        try:
+            logger.info("🔥 Using Firecrawl to fetch Underdog Fantasy data")
+            
+            # Underdog API endpoint
+            url = "https://api.underdogfantasy.com/beta/v5/over_under_lines"
+            
+            result = self.app.scrape(url)
+            
+            if result and hasattr(result, 'markdown'):
+                try:
+                    # Parse JSON from markdown
+                    markdown = result.markdown.strip()
+                    if markdown.startswith('```json'):
+                        markdown = markdown[7:]
+                    elif markdown.startswith('```'):
+                        markdown = markdown[3:]
+                    if markdown.endswith('```'):
+                        markdown = markdown[:-3]
+                    
+                    markdown = markdown.strip()
+                    data = json.loads(markdown)
+                    
+                    logger.info(f"✅ Parsed JSON from Firecrawl for Underdog")
+                    return self._parse_underdog_response(data)
+                    
+                except Exception as e:
+                    logger.error(f"Error parsing Underdog markdown: {e}")
+            
+            return []
+            
+        except Exception as e:
+            logger.error(f"Error using Firecrawl for Underdog: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return []
+    
+    def _parse_underdog_response(self, data: Dict) -> List[Dict]:
+        """Parse Underdog API response"""
+        props = []
+        
+        try:
+            players_data = data.get('players', [])
+            over_under_lines = data.get('over_under_lines', [])
+            appearances = data.get('appearances', [])
+            
+            # Create lookups
+            players_dict = {p['id']: p for p in players_data}
+            appearances_dict = {a['id']: a for a in appearances}
+            
+            for line in over_under_lines:
+                try:
+                    # Get game info
+                    game = line.get('game', {})
+                    sport_id = game.get('sport_id', '')
+                    
+                    # Filter for esports/CS2
+                    if 'esport' not in sport_id.lower() and 'cs' not in sport_id.lower():
+                        continue
+                    
+                    # Get options (over/under)
+                    options = line.get('options', [])
+                    for option in options:
+                        over_under = option.get('over_under', {})
+                        appearance_stat = over_under.get('appearance_stat', {})
+                        
+                        appearance_id = appearance_stat.get('appearance_id')
+                        stat_type = appearance_stat.get('display_stat', '')
+                        stat_value = option.get('stat_value')
+                        
+                        if not stat_value:
+                            continue
+                        
+                        # Get player from appearance
+                        appearance = appearances_dict.get(appearance_id, {})
+                        player_id = appearance.get('player_id')
+                        player = players_dict.get(player_id, {})
+                        player_name = player.get('display_name', 'Unknown')
+                        
+                        if player_name != 'Unknown':
+                            props.append({
+                                'player_name': player_name,
+                                'stat_type': self._normalize_stat_type(stat_type),
+                                'line': float(stat_value),
+                                'platform': 'underdog'
+                            })
+                    
+                except Exception:
+                    continue
+            
+            logger.info(f"Parsed {len(props)} props from Underdog")
+            return props
+            
+        except Exception as e:
+            logger.error(f"Error parsing Underdog response: {e}")
+            return []
+    
+    def _normalize_stat_type(self, stat_type: str) -> str:
+        """Normalize stat type"""
+        stat_type_lower = stat_type.lower()
+        
+        if 'kill' in stat_type_lower:
+            return 'kills'
+        elif 'headshot' in stat_type_lower or 'hs' in stat_type_lower:
+            return 'headshots'
+        else:
+            return stat_type_lower
