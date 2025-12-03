@@ -77,6 +77,10 @@ class CS2DataAggregator:
             if prizepicks_props:
                 self.scraping_status['prizepicks']['success'] = True
                 self.scraping_status['prizepicks']['error'] = None
+                
+                # Track line movements
+                self.line_tracker.record_lines(prizepicks_props)
+                logger.info(f"📈 Tracking {len(prizepicks_props)} PrizePicks lines")
             else:
                 self.scraping_status['prizepicks']['success'] = False
                 self.scraping_status['prizepicks']['error'] = "No props returned (API returned 403 - anti-scraping protection)"
