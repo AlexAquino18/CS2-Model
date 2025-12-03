@@ -7,14 +7,15 @@ import re
 logger = logging.getLogger(__name__)
 
 class HLTVScraper:
-    """Scraper for HLTV CS2 match data using hltv-api.vercel.app"""
+    """Scraper for CS2 match data using RapidAPI csgo-matches-and-tournaments"""
     
     def __init__(self):
-        # Using the public HLTV API instead of scraping
-        self.api_base = "https://hltv-api.vercel.app/api"
+        # Using RapidAPI CS:GO Matches and Tournaments API
+        self.api_base = "https://csgo-matches-and-tournaments.p.rapidapi.com"
         self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'x-rapidapi-host': 'csgo-matches-and-tournaments.p.rapidapi.com',
+            'x-rapidapi-key': '8c05f30b5dmsh937ab1dcaab7bcfp188d5djsn15ef45e13d38'
         }
     
     def fetch_upcoming_matches(self) -> List[Dict]:
