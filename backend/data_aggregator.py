@@ -89,16 +89,30 @@ class CS2DataAggregator:
             self.scraping_status['prizepicks']['success'] = False
             self.scraping_status['prizepicks']['error'] = str(e)
         
-        # Fetch from Underdog
+        # Fetch from Underdog - Use manual data
         try:
             self.scraping_status['underdog']['last_attempt'] = now
+            
+            # Try scraper first
             underdog_props = self.underdog_scraper.fetch_cs2_props()
+            
+            # If scraper fails, use manual data
+            if not underdog_props:
+                from underdog_manual_data import get_underdog_props
+                underdog_props = get_underdog_props()
+                logger.info(f"📝 Using manual Underdog data: {len(underdog_props)} props")
+                
+                # Track manual underdog lines too
+                if underdog_props:
+                    self.line_tracker.record_lines(underdog_props)
+                    logger.info(f"📈 Tracking {len(underdog_props)} Underdog lines")
+            
             if underdog_props:
                 self.scraping_status['underdog']['success'] = True
                 self.scraping_status['underdog']['error'] = None
             else:
                 self.scraping_status['underdog']['success'] = False
-                self.scraping_status['underdog']['error'] = "No props returned (API unavailable)"
+                self.scraping_status['underdog']['error'] = "No props available"
         except Exception as e:
             underdog_props = []
             self.scraping_status['underdog']['success'] = False
