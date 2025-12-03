@@ -9,7 +9,7 @@ This works because:
 3. Can use either API or Selenium approach
 
 SETUP:
-pip install httpx requests
+pip install requests
 
 USAGE:
 python LOCAL_PRIZEPICKS_SCRAPER.py
