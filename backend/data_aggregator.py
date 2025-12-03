@@ -167,10 +167,13 @@ class CS2DataAggregator:
             
             # Generate mock projections for both teams
             for team in [hltv_match['team1'], hltv_match['team2']]:
-                players = player_pools.get(team, player_pools['default'])
+                # Generate or retrieve player names for this team
+                if team not in player_pools:
+                    player_pools[team] = generate_player_names(team)
                 
-                for i in range(5):  # 5 players per team
-                    player_name = f"{team}_{i+1}" if team not in player_pools else players[i]
+                players = player_pools[team]
+                
+                for i, player_name in enumerate(players):  # 5 players per team
                     
                     # Kills projection
                     base_kills = uniform(35, 50)
