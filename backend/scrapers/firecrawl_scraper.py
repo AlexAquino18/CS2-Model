@@ -102,10 +102,10 @@ class FirecrawlPrizePicksScraper:
                 projections = data['data']
                 included = data.get('included', [])
                 
-                # Create player lookup
+                # Create lookups for all types
                 players = {item['id']: item for item in included if item.get('type') == 'new_player'}
-                
-                # Create league lookup
+                games = {item['id']: item for item in included if item.get('type') == 'game'}
+                teams = {item['id']: item for item in included if item.get('type') == 'team'}
                 leagues = {item['id']: item['attributes']['name'] for item in included if item.get('type') == 'league'}
                 
                 for projection in projections:
@@ -117,10 +117,27 @@ class FirecrawlPrizePicksScraper:
                         league_id = relationships.get('league', {}).get('data', {}).get('id')
                         league_name = leagues.get(league_id, '')
                         
-                        # Get player name
+                        # Get player info
                         player_id = relationships.get('new_player', {}).get('data', {}).get('id')
-                        player_info = players.get(player_id, {}).get('attributes', {})
-                        player_name = player_info.get('display_name', 'Unknown')
+                        player_obj = players.get(player_id, {})
+                        player_attrs = player_obj.get('attributes', {})
+                        player_name = player_attrs.get('display_name', 'Unknown')
+                        
+                        # Get team from player's team attribute
+                        player_team = player_attrs.get('team', '')
+                        
+                        # Also try to get team from team_data relationship
+                        team_data_id = player_obj.get('relationships', {}).get('team_data', {}).get('data', {}).get('id')
+                        team_obj = teams.get(team_data_id, {})
+                        team_abbr = team_obj.get('attributes', {}).get('abbreviation', '')
+                        
+                        # Use whichever team info is available
+                        team_name = player_team or team_abbr
+                        
+                        # Get game info for context
+                        game_id = relationships.get('game', {}).get('data', {}).get('id')
+                        game_obj = games.get(game_id, {})
+                        game_external_id = game_obj.get('attributes', {}).get('external_game_id', '')
                         
                         # Get stat and line
                         stat_type = attrs.get('stat_type', '')
@@ -129,11 +146,14 @@ class FirecrawlPrizePicksScraper:
                         if line and player_name and player_name != 'Unknown':
                             props.append({
                                 'player_name': player_name,
+                                'team': team_name,  # Add team information
                                 'stat_type': self._normalize_stat_type(stat_type),
                                 'line': float(line),
                                 'platform': 'prizepicks',
                                 'league_id': league_id,
-                                'league_name': league_name
+                                'league_name': league_name,
+                                'game_id': game_id,
+                                'game_external_id': game_external_id
                             })
                     except:
                         continue
