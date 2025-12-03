@@ -394,10 +394,7 @@ class CS2DataAggregator:
                 ud_line = lines['underdog']
                 
                 if pp_line or ud_line:
-                    # Use average of available lines as our projection
-                    available_lines = [l for l in [pp_line, ud_line] if l]
-                    projected_value = sum(available_lines) / len(available_lines)
-                    
+                    # Build DFS lines list
                     dfs_lines = []
                     if pp_line:
                         dfs_lines.append({
@@ -414,18 +411,15 @@ class CS2DataAggregator:
                             'maps': 'Map1+Map2'
                         })
                     
-                    projection = {
+                    # Return raw prop data for projection model to process
+                    prop = {
                         'match_id': match_id,
                         'player_name': player,
                         'team': team,
                         'stat_type': stat_type,
-                        'projected_value': round(projected_value, 1),
-                        'confidence': 75.0,
-                        'dfs_lines': dfs_lines,
-                        'value_opportunity': False,
-                        'difference': 0.0
+                        'dfs_lines': dfs_lines
                     }
                     
-                    projections.append(projection)
+                    projections.append(prop)
         
         return projections
