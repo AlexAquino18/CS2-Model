@@ -41,8 +41,8 @@ def fetch_prizepicks_api_method():
     try:
         # First, get available leagues
         leagues_response = session.get('https://api.prizepicks.com/leagues', timeout=10)
-            
-            if leagues_response.status_code == 200:
+        
+        if leagues_response.status_code == 200:
                 leagues_data = leagues_response.json()
                 print(f"✅ Successfully fetched leagues list")
                 
