@@ -70,29 +70,51 @@ class PrizePicksScraper:
             logger.error(f"Error fetching leagues: {e}")
             return {}
     
-    def _fetch_league_props(self, league_id: int) -> List[Dict]:
-        """Fetch props for a specific league using correct API format with HTTP/2"""
-        try:
-            # Use the exact format from StackOverflow
-            url = f"{self.base_url}?league_id={league_id}&per_page=250&single_stat=true&game_mode=pickem"
-            
-            logger.info(f"Fetching props from: {url}")
-            
-            # Use httpx with HTTP/2 support
-            with httpx.Client(http2=True, timeout=15) as client:
-                response = client.get(url, headers=self.headers)
+    def _fetch_league_props(self, league_id: int, league_name: str) -> List[Dict]:
+        """Fetch props for a specific league - GitHub dannyphantomSS approach"""
+        all_props = []
+        page = 1
+        
+        while True:
+            try:
+                url = f"{self.base_url}/projections"
+                params = {
+                    'league_id': league_id,
+                    'per_page': 250,
+                    'page': page,
+                    'single_stat': 'true',
+                    'game_mode': 'pickem'
+                }
                 
-                if response.status_code == 200:
-                    data = response.json()
-                    logger.info(f"Successfully fetched projections for league {league_id}")
-                    return self._parse_projections(data)
-                else:
-                    logger.warning(f"PrizePicks API returned status {response.status_code} for league {league_id}")
-                    return []
+                response = self.session.get(url, params=params, timeout=15)
                 
-        except Exception as e:
-            logger.error(f"Error fetching league {league_id} props: {e}")
-            return []
+                if response.status_code == 429:
+                    logger.warning(f"Rate limited for {league_name} page {page}")
+                    break
+                
+                if response.status_code != 200:
+                    logger.warning(f"Error {response.status_code} for {league_name} page {page}")
+                    break
+                
+                data = response.json()
+                props = self._parse_props_response(data, league_name)
+                
+                if not props:
+                    break
+                
+                all_props.extend(props)
+                logger.info(f"{league_name} Page {page}: {len(props)} props (Total: {len(all_props)})")
+                
+                if len(props) < 250:  # Last page
+                    break
+                
+                page += 1
+                
+            except Exception as e:
+                logger.error(f"Error fetching {league_name} page {page}: {str(e)}")
+                break
+        
+        return all_props
     
     def _fetch_all_props(self) -> List[Dict]:
         """Fetch all props without league filter using HTTP/2"""
