@@ -1,0 +1,1682 @@
+[
+  {
+    "player_name": "khaN",
+    "stat_type": "kills",
+    "line": 34.5,
+    "team": "Nemiga"
+  },
+  {
+    "player_name": "khaN",
+    "stat_type": "headshots",
+    "line": 11.5,
+    "team": "Nemiga"
+  },
+  {
+    "player_name": "xant3r",
+    "stat_type": "kills",
+    "line": 27.5,
+    "team": "Nemiga"
+  },
+  {
+    "player_name": "xant3r",
+    "stat_type": "headshots",
+    "line": 15.5,
+    "team": "Nemiga"
+  },
+  {
+    "player_name": "1eer",
+    "stat_type": "kills",
+    "line": 27.5,
+    "team": "Nemiga"
+  },
+  {
+    "player_name": "1eer",
+    "stat_type": "headshots",
+    "line": 12.5,
+    "team": "Nemiga"
+  },
+  {
+    "player_name": "sh1nejezzz",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "RUBY"
+  },
+  {
+    "player_name": "sh1nejezzz",
+    "stat_type": "headshots",
+    "line": 16.5,
+    "team": "RUBY"
+  },
+  {
+    "player_name": "sowalio",
+    "stat_type": "kills",
+    "line": 29.5,
+    "team": "Nemiga"
+  },
+  {
+    "player_name": "sowalio",
+    "stat_type": "headshots",
+    "line": 17.5,
+    "team": "Nemiga"
+  },
+  {
+    "player_name": "riskyb0b",
+    "stat_type": "kills",
+    "line": 29.5,
+    "team": "Nemiga"
+  },
+  {
+    "player_name": "riskyb0b",
+    "stat_type": "headshots",
+    "line": 17.5,
+    "team": "Nemiga"
+  },
+  {
+    "player_name": "Kaide",
+    "stat_type": "kills",
+    "line": 32.5,
+    "team": "RUBY"
+  },
+  {
+    "player_name": "Kaide",
+    "stat_type": "headshots",
+    "line": 16.5,
+    "team": "RUBY"
+  },
+  {
+    "player_name": "H4SAN4TOR",
+    "stat_type": "kills",
+    "line": 27.5,
+    "team": "RUBY"
+  },
+  {
+    "player_name": "H4SAN4TOR",
+    "stat_type": "headshots",
+    "line": 13.5,
+    "team": "RUBY"
+  },
+  {
+    "player_name": "fozil",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "RUBY"
+  },
+  {
+    "player_name": "fozil",
+    "stat_type": "headshots",
+    "line": 15.5,
+    "team": "RUBY"
+  },
+  {
+    "player_name": "maQuein",
+    "stat_type": "kills",
+    "line": 27.5,
+    "team": "RUBY"
+  },
+  {
+    "player_name": "maQuein",
+    "stat_type": "headshots",
+    "line": 8.5,
+    "team": "RUBY"
+  },
+  {
+    "player_name": "Jame",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "PARIVISION"
+  },
+  {
+    "player_name": "Jame",
+    "stat_type": "headshots",
+    "line": 4.5,
+    "team": "PARIVISION"
+  },
+  {
+    "player_name": "torzsi",
+    "stat_type": "kills",
+    "line": 15.5,
+    "team": "MOUZ"
+  },
+  {
+    "player_name": "torzsi",
+    "stat_type": "headshots",
+    "line": 5.5,
+    "team": "MOUZ"
+  },
+  {
+    "player_name": "XiELO",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "PARIVISION"
+  },
+  {
+    "player_name": "XiELO",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "PARIVISION"
+  },
+  {
+    "player_name": "Brollan",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "MOUZ"
+  },
+  {
+    "player_name": "Brollan",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "MOUZ"
+  },
+  {
+    "player_name": "Jimpphat",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "MOUZ"
+  },
+  {
+    "player_name": "Jimpphat",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "MOUZ"
+  },
+  {
+    "player_name": "BELCHONOKK",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "PARIVISION"
+  },
+  {
+    "player_name": "BELCHONOKK",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "PARIVISION"
+  },
+  {
+    "player_name": "Spinx",
+    "stat_type": "kills",
+    "line": 16.5,
+    "team": "MOUZ"
+  },
+  {
+    "player_name": "Spinx",
+    "stat_type": "headshots",
+    "line": 8.5,
+    "team": "MOUZ"
+  },
+  {
+    "player_name": "xertioN",
+    "stat_type": "kills",
+    "line": 15.5,
+    "team": "MOUZ"
+  },
+  {
+    "player_name": "xertioN",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "MOUZ"
+  },
+  {
+    "player_name": "nota",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "PARIVISION"
+  },
+  {
+    "player_name": "nota",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "PARIVISION"
+  },
+  {
+    "player_name": "AW",
+    "stat_type": "kills",
+    "line": 11.5,
+    "team": "PARIVISION"
+  },
+  {
+    "player_name": "AW",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "PARIVISION"
+  },
+  {
+    "player_name": "FORSYY",
+    "stat_type": "kills",
+    "line": 31.5,
+    "team": "Eclot"
+  },
+  {
+    "player_name": "FORSYY",
+    "stat_type": "headshots",
+    "line": 9.5,
+    "team": "Eclot"
+  },
+  {
+    "player_name": "s0und",
+    "stat_type": "kills",
+    "line": 29.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "s0und",
+    "stat_type": "headshots",
+    "line": 21.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "Dytor",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "Eclot"
+  },
+  {
+    "player_name": "Dytor",
+    "stat_type": "headshots",
+    "line": 13.5,
+    "team": "Eclot"
+  },
+  {
+    "player_name": "blytz",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "blytz",
+    "stat_type": "headshots",
+    "line": 18.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "fnl",
+    "stat_type": "kills",
+    "line": 27.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "fnl",
+    "stat_type": "headshots",
+    "line": 16.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "XELLOW",
+    "stat_type": "kills",
+    "line": 29.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "XELLOW",
+    "stat_type": "headshots",
+    "line": 12.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "nbqq",
+    "stat_type": "kills",
+    "line": 30.5,
+    "team": "Eclot"
+  },
+  {
+    "player_name": "nbqq",
+    "stat_type": "headshots",
+    "line": 15.5,
+    "team": "Eclot"
+  },
+  {
+    "player_name": "BTN",
+    "stat_type": "kills",
+    "line": 21.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "BTN",
+    "stat_type": "headshots",
+    "line": 11.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "kreaz",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "Eclot"
+  },
+  {
+    "player_name": "kreaz",
+    "stat_type": "headshots",
+    "line": 13.5,
+    "team": "Eclot"
+  },
+  {
+    "player_name": "spardaus",
+    "stat_type": "kills",
+    "line": 27.5,
+    "team": "Eclot"
+  },
+  {
+    "player_name": "spardaus",
+    "stat_type": "headshots",
+    "line": 13.5,
+    "team": "Eclot"
+  },
+  {
+    "player_name": "910",
+    "stat_type": "kills",
+    "line": 15.5,
+    "team": "Mongolz"
+  },
+  {
+    "player_name": "910",
+    "stat_type": "headshots",
+    "line": 5.5,
+    "team": "Mongolz"
+  },
+  {
+    "player_name": "bLitz",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "Mongolz"
+  },
+  {
+    "player_name": "bLitz",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "Mongolz"
+  },
+  {
+    "player_name": "try",
+    "stat_type": "kills",
+    "line": 15.5,
+    "team": "Imperial"
+  },
+  {
+    "player_name": "try",
+    "stat_type": "headshots",
+    "line": 5.5,
+    "team": "Imperial"
+  },
+  {
+    "player_name": "VINI",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "Imperial"
+  },
+  {
+    "player_name": "VINI",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "Imperial"
+  },
+  {
+    "player_name": "chelo",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "Imperial"
+  },
+  {
+    "player_name": "chelo",
+    "stat_type": "headshots",
+    "line": 8.5,
+    "team": "Imperial"
+  },
+  {
+    "player_name": "mzinho",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "Mongolz"
+  },
+  {
+    "player_name": "mzinho",
+    "stat_type": "headshots",
+    "line": 9.5,
+    "team": "Mongolz"
+  },
+  {
+    "player_name": "Techno4k",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "Mongolz"
+  },
+  {
+    "player_name": "Techno4k",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "Mongolz"
+  },
+  {
+    "player_name": "controlez",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "Mongolz"
+  },
+  {
+    "player_name": "controlez",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "Mongolz"
+  },
+  {
+    "player_name": "noway",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "Imperial"
+  },
+  {
+    "player_name": "noway",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "Imperial"
+  },
+  {
+    "player_name": "skullz",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "Imperial"
+  },
+  {
+    "player_name": "skullz",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "Imperial"
+  },
+  {
+    "player_name": "spirit",
+    "stat_type": "kills",
+    "line": 31.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "spirit",
+    "stat_type": "headshots",
+    "line": 16.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "Pump",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "Novaq"
+  },
+  {
+    "player_name": "Pump",
+    "stat_type": "headshots",
+    "line": 15.5,
+    "team": "Novaq"
+  },
+  {
+    "player_name": "neaLaN",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "Novaq"
+  },
+  {
+    "player_name": "neaLaN",
+    "stat_type": "headshots",
+    "line": 16.5,
+    "team": "Novaq"
+  },
+  {
+    "player_name": "def1zer",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "Novaq"
+  },
+  {
+    "player_name": "def1zer",
+    "stat_type": "headshots",
+    "line": 16.5,
+    "team": "Novaq"
+  },
+  {
+    "player_name": "Goody",
+    "stat_type": "kills",
+    "line": 27.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "Goody",
+    "stat_type": "headshots",
+    "line": 12.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "KusMe",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "KusMe",
+    "stat_type": "headshots",
+    "line": 15.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "youka",
+    "stat_type": "kills",
+    "line": 29.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "youka",
+    "stat_type": "headshots",
+    "line": 10.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "Something",
+    "stat_type": "kills",
+    "line": 27.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "Something",
+    "stat_type": "headshots",
+    "line": 16.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "modeSavage",
+    "stat_type": "kills",
+    "line": 29.5,
+    "team": "Novaq"
+  },
+  {
+    "player_name": "modeSavage",
+    "stat_type": "headshots",
+    "line": 12.5,
+    "team": "Novaq"
+  },
+  {
+    "player_name": "tasman",
+    "stat_type": "kills",
+    "line": 31.5,
+    "team": "Novaq"
+  },
+  {
+    "player_name": "tasman",
+    "stat_type": "headshots",
+    "line": 19.5,
+    "team": "Novaq"
+  },
+  {
+    "player_name": "donk",
+    "stat_type": "kills",
+    "line": 19.5,
+    "team": "Spirit"
+  },
+  {
+    "player_name": "donk",
+    "stat_type": "headshots",
+    "line": 11.5,
+    "team": "Spirit"
+  },
+  {
+    "player_name": "tN1R",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "Spirit"
+  },
+  {
+    "player_name": "tN1R",
+    "stat_type": "headshots",
+    "line": 9.5,
+    "team": "Spirit"
+  },
+  {
+    "player_name": "zweih",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "Spirit"
+  },
+  {
+    "player_name": "zweih",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "Spirit"
+  },
+  {
+    "player_name": "ultimate",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "Liquid"
+  },
+  {
+    "player_name": "ultimate",
+    "stat_type": "headshots",
+    "line": 5.5,
+    "team": "Liquid"
+  },
+  {
+    "player_name": "NAF",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "Liquid"
+  },
+  {
+    "player_name": "NAF",
+    "stat_type": "headshots",
+    "line": 5.5,
+    "team": "Liquid"
+  },
+  {
+    "player_name": "EliGE",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "Liquid"
+  },
+  {
+    "player_name": "EliGE",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "Liquid"
+  },
+  {
+    "player_name": "sh1ro",
+    "stat_type": "kills",
+    "line": 16.5,
+    "team": "Spirit"
+  },
+  {
+    "player_name": "sh1ro",
+    "stat_type": "headshots",
+    "line": 5.5,
+    "team": "Spirit"
+  },
+  {
+    "player_name": "Nertz",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "Liquid"
+  },
+  {
+    "player_name": "Nertz",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "Liquid"
+  },
+  {
+    "player_name": "Chopper",
+    "stat_type": "kills",
+    "line": 11.5,
+    "team": "Spirit"
+  },
+  {
+    "player_name": "Chopper",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "Spirit"
+  },
+  {
+    "player_name": "siuhy",
+    "stat_type": "kills",
+    "line": 10.5,
+    "team": "Liquid"
+  },
+  {
+    "player_name": "siuhy",
+    "stat_type": "headshots",
+    "line": 5.5,
+    "team": "Liquid"
+  },
+  {
+    "player_name": "Kvem",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "Passion UA"
+  },
+  {
+    "player_name": "Kvem",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "Passion UA"
+  },
+  {
+    "player_name": "malbsMd",
+    "stat_type": "kills",
+    "line": 15.5,
+    "team": "G2"
+  },
+  {
+    "player_name": "malbsMd",
+    "stat_type": "headshots",
+    "line": 10.5,
+    "team": "G2"
+  },
+  {
+    "player_name": "Grim",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "Passion UA"
+  },
+  {
+    "player_name": "Grim",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "Passion UA"
+  },
+  {
+    "player_name": "nicx",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "Passion UA"
+  },
+  {
+    "player_name": "nicx",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "Passion UA"
+  },
+  {
+    "player_name": "JT",
+    "stat_type": "kills",
+    "line": 11.5,
+    "team": "Passion UA"
+  },
+  {
+    "player_name": "JT",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "Passion UA"
+  },
+  {
+    "player_name": "MATYS",
+    "stat_type": "kills",
+    "line": 15.5,
+    "team": "G2"
+  },
+  {
+    "player_name": "MATYS",
+    "stat_type": "headshots",
+    "line": 10.5,
+    "team": "G2"
+  },
+  {
+    "player_name": "HeavyGod",
+    "stat_type": "kills",
+    "line": 15.5,
+    "team": "G2"
+  },
+  {
+    "player_name": "HeavyGod",
+    "stat_type": "headshots",
+    "line": 8.5,
+    "team": "G2"
+  },
+  {
+    "player_name": "SunPayus",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "G2"
+  },
+  {
+    "player_name": "SunPayus",
+    "stat_type": "headshots",
+    "line": 5.5,
+    "team": "G2"
+  },
+  {
+    "player_name": "Hallzerk",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "Passion UA"
+  },
+  {
+    "player_name": "Hallzerk",
+    "stat_type": "headshots",
+    "line": 5.5,
+    "team": "Passion UA"
+  },
+  {
+    "player_name": "huNter-",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "G2"
+  },
+  {
+    "player_name": "huNter-",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "G2"
+  },
+  {
+    "player_name": "ZywOo",
+    "stat_type": "kills",
+    "line": 17.5,
+    "team": "Vitality"
+  },
+  {
+    "player_name": "ZywOo",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "Vitality"
+  },
+  {
+    "player_name": "jcobbb",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "FaZe"
+  },
+  {
+    "player_name": "jcobbb",
+    "stat_type": "headshots",
+    "line": 8.5,
+    "team": "FaZe"
+  },
+  {
+    "player_name": "frozen",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "FaZe"
+  },
+  {
+    "player_name": "frozen",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "FaZe"
+  },
+  {
+    "player_name": "apEX",
+    "stat_type": "kills",
+    "line": 11.5,
+    "team": "Vitality"
+  },
+  {
+    "player_name": "apEX",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "Vitality"
+  },
+  {
+    "player_name": "broky",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "FaZe"
+  },
+  {
+    "player_name": "broky",
+    "stat_type": "headshots",
+    "line": 4.5,
+    "team": "FaZe"
+  },
+  {
+    "player_name": "ropz",
+    "stat_type": "kills",
+    "line": 15.5,
+    "team": "Vitality"
+  },
+  {
+    "player_name": "ropz",
+    "stat_type": "headshots",
+    "line": 8.5,
+    "team": "Vitality"
+  },
+  {
+    "player_name": "mezii",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "Vitality"
+  },
+  {
+    "player_name": "mezii",
+    "stat_type": "headshots",
+    "line": 8.5,
+    "team": "Vitality"
+  },
+  {
+    "player_name": "flameZ",
+    "stat_type": "kills",
+    "line": 15.5,
+    "team": "Vitality"
+  },
+  {
+    "player_name": "flameZ",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "Vitality"
+  },
+  {
+    "player_name": "Twistzz",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "FaZe"
+  },
+  {
+    "player_name": "Twistzz",
+    "stat_type": "headshots",
+    "line": 8.5,
+    "team": "FaZe"
+  },
+  {
+    "player_name": "karrigan",
+    "stat_type": "kills",
+    "line": 10.5,
+    "team": "FaZe"
+  },
+  {
+    "player_name": "karrigan",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "FaZe"
+  },
+  {
+    "player_name": "Lucky",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "3DMAX"
+  },
+  {
+    "player_name": "Lucky",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "3DMAX"
+  },
+  {
+    "player_name": "dav1deuS",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "paiN"
+  },
+  {
+    "player_name": "dav1deuS",
+    "stat_type": "headshots",
+    "line": 8.5,
+    "team": "paiN"
+  },
+  {
+    "player_name": "nqz",
+    "stat_type": "kills",
+    "line": 15.5,
+    "team": "paiN"
+  },
+  {
+    "player_name": "nqz",
+    "stat_type": "headshots",
+    "line": 4.5,
+    "team": "paiN"
+  },
+  {
+    "player_name": "Ex3rcice",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "3DMAX"
+  },
+  {
+    "player_name": "Ex3rcice",
+    "stat_type": "headshots",
+    "line": 8.5,
+    "team": "3DMAX"
+  },
+  {
+    "player_name": "biguzera",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "paiN"
+  },
+  {
+    "player_name": "biguzera",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "paiN"
+  },
+  {
+    "player_name": "Maka",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "3DMAX"
+  },
+  {
+    "player_name": "Maka",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "3DMAX"
+  },
+  {
+    "player_name": "bodyy",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "3DMAX"
+  },
+  {
+    "player_name": "bodyy",
+    "stat_type": "headshots",
+    "line": 8.5,
+    "team": "3DMAX"
+  },
+  {
+    "player_name": "Graviti",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "3DMAX"
+  },
+  {
+    "player_name": "Graviti",
+    "stat_type": "headshots",
+    "line": 8.5,
+    "team": "3DMAX"
+  },
+  {
+    "player_name": "Snow",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "paiN"
+  },
+  {
+    "player_name": "Snow",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "paiN"
+  },
+  {
+    "player_name": "dgt",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "paiN"
+  },
+  {
+    "player_name": "dgt",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "paiN"
+  },
+  {
+    "player_name": "NiKo",
+    "stat_type": "kills",
+    "line": 15.5,
+    "team": "Falcons"
+  },
+  {
+    "player_name": "NiKo",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "Falcons"
+  },
+  {
+    "player_name": "npl",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "B8"
+  },
+  {
+    "player_name": "npl",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "B8"
+  },
+  {
+    "player_name": "TeSeS",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "Falcons"
+  },
+  {
+    "player_name": "TeSeS",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "Falcons"
+  },
+  {
+    "player_name": "kyxsan",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "Falcons"
+  },
+  {
+    "player_name": "kyxsan",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "Falcons"
+  },
+  {
+    "player_name": "Alex666",
+    "stat_type": "kills",
+    "line": 11.5,
+    "team": "B8"
+  },
+  {
+    "player_name": "Alex666",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "B8"
+  },
+  {
+    "player_name": "kyousuke",
+    "stat_type": "kills",
+    "line": 16.5,
+    "team": "Falcons"
+  },
+  {
+    "player_name": "kyousuke",
+    "stat_type": "headshots",
+    "line": 9.5,
+    "team": "Falcons"
+  },
+  {
+    "player_name": "kensizor",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "B8"
+  },
+  {
+    "player_name": "kensizor",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "B8"
+  },
+  {
+    "player_name": "headtr1ck",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "B8"
+  },
+  {
+    "player_name": "headtr1ck",
+    "stat_type": "headshots",
+    "line": 4.5,
+    "team": "B8"
+  },
+  {
+    "player_name": "esenthial",
+    "stat_type": "kills",
+    "line": 12.5,
+    "team": "B8"
+  },
+  {
+    "player_name": "esenthial",
+    "stat_type": "headshots",
+    "line": 8.5,
+    "team": "B8"
+  },
+  {
+    "player_name": "m0NESY-",
+    "stat_type": "kills",
+    "line": 17.5,
+    "team": "Falcons"
+  },
+  {
+    "player_name": "m0NESY-",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "Falcons"
+  },
+  {
+    "player_name": "makazze",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "Na'Vi"
+  },
+  {
+    "player_name": "makazze",
+    "stat_type": "headshots",
+    "line": 7.5,
+    "team": "Na'Vi"
+  },
+  {
+    "player_name": "B1t",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "Na'Vi"
+  },
+  {
+    "player_name": "B1t",
+    "stat_type": "headshots",
+    "line": 9.5,
+    "team": "Na'Vi"
+  },
+  {
+    "player_name": "FalleN",
+    "stat_type": "kills",
+    "line": 11.5,
+    "team": "FURIA"
+  },
+  {
+    "player_name": "FalleN",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "FURIA"
+  },
+  {
+    "player_name": "yuurih",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "FURIA"
+  },
+  {
+    "player_name": "yuurih",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "FURIA"
+  },
+  {
+    "player_name": "YEKINDAR",
+    "stat_type": "kills",
+    "line": 14.5,
+    "team": "FURIA"
+  },
+  {
+    "player_name": "YEKINDAR",
+    "stat_type": "headshots",
+    "line": 10.5,
+    "team": "FURIA"
+  },
+  {
+    "player_name": "molodoy",
+    "stat_type": "kills",
+    "line": 17.5,
+    "team": "FURIA"
+  },
+  {
+    "player_name": "molodoy",
+    "stat_type": "headshots",
+    "line": 5.5,
+    "team": "FURIA"
+  },
+  {
+    "player_name": "KSCerato",
+    "stat_type": "kills",
+    "line": 15.5,
+    "team": "FURIA"
+  },
+  {
+    "player_name": "KSCerato",
+    "stat_type": "headshots",
+    "line": 8.5,
+    "team": "FURIA"
+  },
+  {
+    "player_name": "iM",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "Na'Vi"
+  },
+  {
+    "player_name": "iM",
+    "stat_type": "headshots",
+    "line": 6.5,
+    "team": "Na'Vi"
+  },
+  {
+    "player_name": "w0nderful",
+    "stat_type": "kills",
+    "line": 13.5,
+    "team": "Na'Vi"
+  },
+  {
+    "player_name": "w0nderful",
+    "stat_type": "headshots",
+    "line": 5.5,
+    "team": "Na'Vi"
+  },
+  {
+    "player_name": "Aleksib",
+    "stat_type": "kills",
+    "line": 10.5,
+    "team": "Na'Vi"
+  },
+  {
+    "player_name": "Aleksib",
+    "stat_type": "headshots",
+    "line": 5.5,
+    "team": "Na'Vi"
+  },
+  {
+    "player_name": "XELLOW",
+    "stat_type": "kills",
+    "line": 31.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "XELLOW",
+    "stat_type": "headshots",
+    "line": 12.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "Calyx",
+    "stat_type": "kills",
+    "line": 30.5,
+    "team": "EF"
+  },
+  {
+    "player_name": "Calyx",
+    "stat_type": "headshots",
+    "line": 19.5,
+    "team": "EF"
+  },
+  {
+    "player_name": "imoRR",
+    "stat_type": "kills",
+    "line": 29.5,
+    "team": "EF"
+  },
+  {
+    "player_name": "imoRR",
+    "stat_type": "headshots",
+    "line": 17.5,
+    "team": "EF"
+  },
+  {
+    "player_name": "fnl",
+    "stat_type": "kills",
+    "line": 29.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "fnl",
+    "stat_type": "headshots",
+    "line": 17.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "emstar",
+    "stat_type": "kills",
+    "line": 30.5,
+    "team": "EF"
+  },
+  {
+    "player_name": "emstar",
+    "stat_type": "headshots",
+    "line": 16.5,
+    "team": "EF"
+  },
+  {
+    "player_name": "s0und",
+    "stat_type": "kills",
+    "line": 31.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "s0und",
+    "stat_type": "headshots",
+    "line": 21.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "BTN",
+    "stat_type": "kills",
+    "line": 23.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "BTN",
+    "stat_type": "headshots",
+    "line": 12.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "blytz",
+    "stat_type": "kills",
+    "line": 30.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "blytz",
+    "stat_type": "headshots",
+    "line": 18.5,
+    "team": "Nexus"
+  },
+  {
+    "player_name": "lugseN",
+    "stat_type": "kills",
+    "line": 27.5,
+    "team": "EF"
+  },
+  {
+    "player_name": "lugseN",
+    "stat_type": "headshots",
+    "line": 10.5,
+    "team": "EF"
+  },
+  {
+    "player_name": "jresy",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "EF"
+  },
+  {
+    "player_name": "jresy",
+    "stat_type": "headshots",
+    "line": 13.5,
+    "team": "EF"
+  },
+  {
+    "player_name": "draken",
+    "stat_type": "kills",
+    "line": 30.5,
+    "team": "JS"
+  },
+  {
+    "player_name": "draken",
+    "stat_type": "headshots",
+    "line": 9.5,
+    "team": "JS"
+  },
+  {
+    "player_name": "Sapec",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "JS"
+  },
+  {
+    "player_name": "Sapec",
+    "stat_type": "headshots",
+    "line": 15.5,
+    "team": "JS"
+  },
+  {
+    "player_name": "spirit",
+    "stat_type": "kills",
+    "line": 31.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "spirit",
+    "stat_type": "headshots",
+    "line": 16.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "youka",
+    "stat_type": "kills",
+    "line": 29.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "youka",
+    "stat_type": "headshots",
+    "line": 11.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "Something",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "Something",
+    "stat_type": "headshots",
+    "line": 16.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "HEAP",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "JS"
+  },
+  {
+    "player_name": "HEAP",
+    "stat_type": "headshots",
+    "line": 17.5,
+    "team": "JS"
+  },
+  {
+    "player_name": "jocab",
+    "stat_type": "kills",
+    "line": 29.5,
+    "team": "JS"
+  },
+  {
+    "player_name": "jocab",
+    "stat_type": "headshots",
+    "line": 15.5,
+    "team": "JS"
+  },
+  {
+    "player_name": "KusMe",
+    "stat_type": "kills",
+    "line": 29.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "KusMe",
+    "stat_type": "headshots",
+    "line": 15.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "Lekr0",
+    "stat_type": "kills",
+    "line": 26.5,
+    "team": "JS"
+  },
+  {
+    "player_name": "Lekr0",
+    "stat_type": "headshots",
+    "line": 15.5,
+    "team": "JS"
+  },
+  {
+    "player_name": "Goody",
+    "stat_type": "kills",
+    "line": 27.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "Goody",
+    "stat_type": "headshots",
+    "line": 13.5,
+    "team": "F.Reload"
+  },
+  {
+    "player_name": "CYPHER",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "500"
+  },
+  {
+    "player_name": "CYPHER",
+    "stat_type": "headshots",
+    "line": 17.5,
+    "team": "500"
+  },
+  {
+    "player_name": "kRaSnaL",
+    "stat_type": "kills",
+    "line": 30.5,
+    "team": "500"
+  },
+  {
+    "player_name": "kRaSnaL",
+    "stat_type": "headshots",
+    "line": 15.5,
+    "team": "500"
+  },
+  {
+    "player_name": "CeRq",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "500"
+  },
+  {
+    "player_name": "CeRq",
+    "stat_type": "headshots",
+    "line": 10.5,
+    "team": "500"
+  },
+  {
+    "player_name": "Tr0ublE",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "BSM"
+  },
+  {
+    "player_name": "Tr0ublE",
+    "stat_type": "headshots",
+    "line": 9.5,
+    "team": "BSM"
+  },
+  {
+    "player_name": "volt",
+    "stat_type": "kills",
+    "line": 28.5,
+    "team": "500"
+  },
+  {
+    "player_name": "volt",
+    "stat_type": "headshots",
+    "line": 15.5,
+    "team": "500"
+  },
+  {
+    "player_name": "OWNER",
+    "stat_type": "kills",
+    "line": 29.5,
+    "team": "BSM"
+  },
+  {
+    "player_name": "OWNER",
+    "stat_type": "headshots",
+    "line": 14.5,
+    "team": "BSM"
+  },
+  {
+    "player_name": "Rainwaker",
+    "stat_type": "kills",
+    "line": 30.5,
+    "team": "500"
+  },
+  {
+    "player_name": "Rainwaker",
+    "stat_type": "headshots",
+    "line": 14.5,
+    "team": "500"
+  },
+  {
+    "player_name": "fakerealityy",
+    "stat_type": "kills",
+    "line": 26.5,
+    "team": "BSM"
+  },
+  {
+    "player_name": "fakerealityy",
+    "stat_type": "headshots",
+    "line": 15.5,
+    "team": "BSM"
+  },
+  {
+    "player_name": "kukubambo",
+    "stat_type": "kills",
+    "line": 25.5,
+    "team": "BSM"
+  },
+  {
+    "player_name": "kukubambo",
+    "stat_type": "headshots",
+    "line": 14.5,
+    "team": "BSM"
+  },
+  {
+    "player_name": "levantino",
+    "stat_type": "kills",
+    "line": 26.5,
+    "team": "BSM"
+  },
+  {
+    "player_name": "levantino",
+    "stat_type": "headshots",
+    "line": 14.5,
+    "team": "BSM"
+  }
+]
